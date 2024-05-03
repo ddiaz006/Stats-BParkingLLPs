@@ -31,4 +31,4 @@ $(TARGET) : $(OBJ)
 	@echo $<
 
 clean :
-	rm -f *.o app/*.o src/*.o include/*.o $(TARGET)*~
+	rm -f *.o *.pdf *.png app/*.o src/*.o include/*.o $(TARGET)*~

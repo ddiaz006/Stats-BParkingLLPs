@@ -49,7 +49,8 @@ const float bottomMargin = 0.10;
 
 //CMS STANDARD
 TString extraText   = "Preliminary";
-TString lumiText = "41.6 fb^{-1} (13 TeV)";
+//TString lumiText = "41.6 fb^{-1} (13 TeV)";
+TString lumiText = "40.35 fb^{-1} (13 TeV)";
 
 bool AddCMS( TCanvas* C )
 {
@@ -174,6 +175,7 @@ TString s_region="";
   //-----------------
   //Input File List
   //-----------------
+  TString s_mass = ParseCommandLine( argc, argv, "-m=" );
   std::string inputList = ParseCommandLine( argc, argv, "-inputList=" );
   if (  inputList == "" )
     {
@@ -186,14 +188,20 @@ TString s_region="";
   std::map<float, Limit> mymap_pi0;
   std::map<float, Limit> mymap_pihad;
 
+  size_t lastindex = inputList.find_last_of(".");
+  std::string rawName = inputList.substr(0, lastindex);
+
+  std::cout<<"rawName: "<<rawName<<std::endl;
+
   std::string fname;
+  float theSF;
   TString s_fname;
   double limitSF;
   if( ifs.is_open() )
     {
       while( ifs.good() )
 	{
-	  ifs >> fname;
+	  ifs >>theSF >> fname;
           s_fname=fname;
 	  if ( ifs.eof() ) break;
 	  TFile* fin = new TFile( fname.c_str(), "READ" );
@@ -207,8 +215,8 @@ TString s_region="";
 	  TTree* tree = (TTree*)fin->Get("limit");
 	  double limit;
 	  Limit tmpLimit;
-	  limitSF = 0.00001;
-          std::cout<<s_fname<< "    "<<ctau<<"   "<<_ctau<<std::endl;
+	  limitSF = theSF;//0.000001;
+          std::cout<<"SF: "<<limitSF<<" "<< s_fname<< "    "<<ctau<<"   "<<_ctau<<std::endl;
           //if (s_fname.Contains("SigPi0") && _ctau == 10000.0f) limitSF = 0.00001*1000.;
           //if (s_fname.Contains("SigPi0") && _ctau == 3.0f)     limitSF = 0.00001*100000.;
           //if (s_fname.Contains("SigPi0") && _ctau == 5.0f)     limitSF = 0.00001*1000.;
@@ -416,7 +424,7 @@ TString s_region="";
   latexMass.SetNDC();
   latexMass.SetTextSize(0.038);
   latexMass.SetTextFont(42);
-  latexMass.DrawLatex(0.15, 0.88, "m_{#Phi} = 0.3 GeV   "+s_region);
+  latexMass.DrawLatex(0.15, 0.88, "m_{#Phi} = "+s_mass+" GeV   "+s_region);
 
   //95% CL label
   float cmsx = 0.93;
@@ -435,8 +443,9 @@ TString s_region="";
   AddCMS(c);
 
   //c->SetLogx();
-  c->SaveAs("Limit_bp.pdf");
-  c->SaveAs("Limit_bp.C");
+  c->SaveAs(("Limit_"+rawName+".pdf").c_str());
+  c->SaveAs(("Limit_"+rawName+".png").c_str());
+  c->SaveAs(("scripts/Limit_"+rawName+".C").c_str());
 
   gObs_pi0->GetXaxis()->SetRangeUser(0, 30);
   gObs_pi0->Write("gObs");

@@ -1,0 +1,10 @@
+./PlotLimits --m="0.3" --inputList=PiAll_WP19_M0p3_high.list 
+./PlotLimits --m="0.3" --inputList=PiAll_WP19_M0p3_low.list 
+./PlotLimits --m="0.5" --inputList=PiAll_WP19_M0p5_high.list 
+./PlotLimits --m="0.5" --inputList=PiAll_WP19_M0p5_low.list 
+./PlotLimits --m="1.0" --inputList=PiAll_WP19_M1p0_high.list 
+./PlotLimits --m="1.0" --inputList=PiAll_WP19_M1p0_low.list 
+./PlotLimits --m="2.0" --inputList=PiAll_WP19_M2p0_high.list 
+./PlotLimits --m="2.0" --inputList=PiAll_WP19_M2p0_low.list 
+./PlotLimits --m="3.0" --inputList=PiAll_WP19_M3p0_high.list 
+./PlotLimits --m="3.0" --inputList=PiAll_WP19_M3p0_low.list 
