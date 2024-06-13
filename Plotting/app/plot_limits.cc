@@ -32,7 +32,7 @@ bool plotLHCb = false;
 
 const float lumi = 5;
 const float minLHCb = 5e-13;//5e-8;
-const float min = 5e-8;
+const float min = 5e-6;
 const float max = 0.1;
 
 //exp/obs limit line color
@@ -90,12 +90,37 @@ bool AddCMS( TCanvas* C )
   return true;
 };
 
+float getSF(TString path){
+  std::ifstream file(path);
+  if (!file.is_open()) {
+      std::cerr << "Failed to read SF.\n";
+      return -1; 
+  }
+
+  TString line;
+  double sf_value = 0.0;
+  TString sf_tag = "#SF:";
+
+  while (!file.eof()) {
+      line.ReadLine(file);
+      if (line.BeginsWith(sf_tag)) {
+          TString value_str = line(sf_tag.Length(), line.Length());
+          value_str = value_str.Strip(TString::kBoth); // Strip whitespace from both ends
+          sf_value = value_str.Atof(); // Convert the extracted string to a float
+          break;
+      }
+  }
+  file.close();
+  return sf_value;
+}
+
 void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int style){
   g->SetMaximum(max);
   g->SetMinimum(minimum); 
   g->SetLineColor(c);
   g->SetTitle("");
   g->SetTitle(";#Phi proper decay length [mm];95 % CL Upper Limit on BR(B #rightarrow K#Phi);");
+  g->GetXaxis()->SetTitleSize(0.09);
 
   if(type == "exp"){
     g->SetLineStyle(style);
@@ -113,8 +138,8 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
 }
 
 void setOffsets(TGraph* g){
-  g->GetXaxis()->SetTitleOffset(1.3);
-  g->GetYaxis()->SetTitleOffset(0);
+  g->GetXaxis()->SetTitleOffset(0.9);
+  g->GetYaxis()->SetTitleOffset(0.95);
 }
 
 void setLegendQualities(TLegend* l, int nColumns){
@@ -124,7 +149,7 @@ void setLegendQualities(TLegend* l, int nColumns){
   l->SetLineWidth(1);
   l->SetFillColor(0);
   l->SetFillStyle(1001);
-  l->SetTextSize(0.03);
+  l->SetTextSize(0.05);
 //  if(plotLHCb)l->SetTextSize(0.01);
   l->SetNColumns(nColumns);
 
@@ -194,15 +219,19 @@ TString s_region="";
   std::cout<<"rawName: "<<rawName<<std::endl;
 
   std::string fname;
-  float theSF;
-  TString s_fname;
+  TString s_fname, s_cardPath;
   double limitSF;
   if( ifs.is_open() )
     {
       while( ifs.good() )
 	{
-	  ifs >>theSF >> fname;
+	  ifs >> fname;
           s_fname=fname;
+          s_cardPath=fname;
+          Ssiz_t lastSlash = s_cardPath.Last('/');
+          s_cardPath.Replace(lastSlash+1, s_cardPath.Length() - lastSlash - 1, "card.txt");
+
+          
 	  if ( ifs.eof() ) break;
 	  TFile* fin = new TFile( fname.c_str(), "READ" );
 	  if ( fin->IsZombie() ) continue;
@@ -215,7 +244,7 @@ TString s_region="";
 	  TTree* tree = (TTree*)fin->Get("limit");
 	  double limit;
 	  Limit tmpLimit;
-	  limitSF = theSF;//0.000001;
+	  limitSF = getSF(s_cardPath);//0.000001;
           std::cout<<"SF: "<<limitSF<<" "<< s_fname<< "    "<<ctau<<"   "<<_ctau<<std::endl;
           //if (s_fname.Contains("SigPi0") && _ctau == 10000.0f) limitSF = 0.00001*1000.;
           //if (s_fname.Contains("SigPi0") && _ctau == 3.0f)     limitSF = 0.00001*100000.;
@@ -250,9 +279,9 @@ TString s_region="";
 	        mymap_pihad[_ctau] = tmpLimit;
 	      }
           }
-          if      (s_fname.Contains("csc")) s_region="CSC";
-          else if (s_fname.Contains("dt"))  s_region="DT";
-          else                              s_region="CSC+DT Combined";
+          if      (s_fname.Contains("CSC")) s_region="";//"CSC";
+          else if (s_fname.Contains("DT"))  s_region="DT";
+          else                              s_region="CSC & DT";
 	  delete fin;
 	}
     }
@@ -382,17 +411,18 @@ TString s_region="";
   TCanvas* c = new TCanvas( "c", "c", 2119, 33, 800, 700 );
   setCanvas(c);
 
-
   //---------Draw
   //gTwoS_pi0->Draw("AF");
   //gObs_pi0->Draw("L");
   gExp_pihad->Draw("AL");
-  gExp_pi0->Draw("L");
-  gOneS_pi0->Draw("F");
   gOneS_pihad->Draw("F");
+//  gExp_pi0->Draw("L");
+//  gOneS_pi0->Draw("F");
 //  if(plotLHCb) graph_lhcb_0p5->Draw("L");
 //  if(plotLHCb) graph_lhcb_1p0->Draw("L");
-
+  gExp_pihad->GetXaxis()->SetTitleSize(0.05);
+  gExp_pihad->GetYaxis()->SetTitleSize(0.05);
+  c->Update();
   setOffsets(gExp_pihad);
   setOffsets(gOneS_pihad);
   setOffsets(gObs_pihad);
@@ -400,18 +430,19 @@ TString s_region="";
   setOffsets(gOneS_pi0);
   setOffsets(gObs_pi0);
 
-  TLegend* leg = new TLegend( 0.15, 0.15, 0.5, 0.35, NULL, "brNDC" );
+  TLegend* leg = new TLegend( 0.15, 0.15, 0.5, 0.25, NULL, "brNDC" );
   setLegendQualities(leg,1);
  
-  TLegend* leg2 = new TLegend( 0.5, 0.15, 0.925, 0.35, NULL, "brNDC" );
+  TLegend* leg2 = new TLegend( 0.5, 0.15, 0.925, 0.25, NULL, "brNDC" );
   setLegendQualities(leg2,1);
   
-  leg->AddEntry( gExp_pi0,   "#Phi #rightarrow  #Pi^{0}#Pi^{0}", "l" );
-  leg->AddEntry( gExp_pihad, "#Phi #rightarrow  #Pi^{+}#Pi^{-}", "l" );
+  //leg->AddEntry( gExp_pi0,   "#Phi #rightarrow  #Pi^{0}#Pi^{0}", "l" );
+  //leg->AddEntry( gExp_pihad, "#Phi #rightarrow  #Pi^{+}#Pi^{-}", "l" );
+  leg->AddEntry( gExp_pihad, "#Phi #rightarrow  #Pi#Pi", "l" );
   if(plotLHCb)leg->AddEntry( graph_lhcb_0p5, "LHCb B #rightarrow K(S #rightarrow #mu#mu); m_{S} = 0.5 GeV" , "l" );
   if(plotLHCb)leg->AddEntry( graph_lhcb_1p0, "LHCb B #rightarrow K(S #rightarrow #mu#mu); m_{S} = 1 GeV" , "l" );
 
-  leg2->AddEntry( gOneS_pi0, "#pm 1 s.d. expected", "f" );
+  //leg2->AddEntry( gOneS_pi0, "#pm 1 s.d. expected", "f" );
   leg2->AddEntry( gOneS_pihad, "#pm 1 s.d. expected", "f" );
   if(plotLHCb) leg2->AddEntry("", "", "");  // Add an empty entry
   if(plotLHCb) leg2->AddEntry("", "", "");  // Add an empty entry
@@ -422,23 +453,24 @@ TString s_region="";
   //Phi Mass label
   TLatex latexMass;
   latexMass.SetNDC();
-  latexMass.SetTextSize(0.038);
+  latexMass.SetTextSize(0.05);
   latexMass.SetTextFont(42);
-  latexMass.DrawLatex(0.15, 0.88, "m_{#Phi} = "+s_mass+" GeV   "+s_region);
+  //latexMass.DrawLatex(0.4, 0.88, "m_{#Phi} = "+s_mass+" GeV");//   "+s_region);
+  latexMass.DrawLatex(0.4, 0.88, "m_{#Phi} = "+s_mass+" GeV   "+s_region);
 
-  //95% CL label
-  float cmsx = 0.93;
-  float cmsy = 0.88;
-  float cmsSize = 0.04;
-  float cmsTextFont = 41;  // default is helvetic-bold
-  TLatex latex;
-  latex.SetNDC();
-  latex.SetTextAngle(0);
-  latex.SetTextColor(kBlack);
-  latex.SetTextAlign(31);
-  latex.SetTextSize(cmsSize);
-  latex.SetTextFont(cmsTextFont);
-  latex.DrawLatex(cmsx, cmsy, "95% CL upper limits");
+//  //95% CL label
+//  float cmsx = 0.93;
+//  float cmsy = 0.88;
+//  float cmsSize = 0.04;
+//  float cmsTextFont = 41;  // default is helvetic-bold
+//  TLatex latex;
+//  latex.SetNDC();
+//  latex.SetTextAngle(0);
+//  latex.SetTextColor(kBlack);
+//  latex.SetTextAlign(31);
+//  latex.SetTextSize(cmsSize);
+//  latex.SetTextFont(cmsTextFont);
+//  latex.DrawLatex(cmsx, cmsy, "95% CL upper limits");
 
   AddCMS(c);
 

@@ -5,7 +5,7 @@ def process_card_file(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
     
-    if lines[0].startswith('# SF:'):
+    if lines[0].startswith('#SF:'):
         print(f'Scale Factor already applied in: {file_path}')
         return
     
@@ -15,7 +15,10 @@ def process_card_file(file_path):
     indices_to_use = [0, 2, 4, 6]
 
     values_to_use = [float(rate_values[i]) for i in indices_to_use]
-    sf = 1.0/sum(values_to_use) / len(values_to_use)
+    #sf = 1.0/sum(values_to_use) / len(values_to_use)
+    sf = 1.
+    if values_to_use[0] > 0:
+      sf = 2.0/values_to_use[0]
 
     new_rate_values = ['rate']
     new_scaled_rate_values = []
@@ -57,29 +60,29 @@ def process_card_file(file_path):
                         
                 lines[i] = ' '.join(new_mc_stats_values) + '\n'
         
-    lines.insert(0, f'# SF: {sf:.5E}\n')
+    lines.insert(0, f'#SF: {sf:.5E}\n')
 
     with open(file_path, 'w') as file:
         file.writelines(lines)
 
-#def update_directory(parent_directory):
-#    # Traverse through the directory
-#    for root, dirs, files in os.walk(parent_directory):
-#        for file_name in files:
-#            if file_name == 'card.txt':
-#                file_path = os.path.join(root, file_name)
-#                print(f'Processing file: {file_path}')
-#                process_card_file(file_path)
 def update_directory(parent_directory):
-    # Specific file path to process
-    specific_file_path = os.path.join(parent_directory, 'Lim_WP19_IT/SigPiPlusPiMinus_M0p3_low_ctau300/card.txt')
-
-    # Check if the specific file exists and process only this file
-    if os.path.exists(specific_file_path):
-        print(f'Processing file: {specific_file_path}')
-        process_card_file(specific_file_path)
-    else:
-        print(f'Specified file does not exist: {specific_file_path}')
+    # Traverse through the directory
+    for root, dirs, files in os.walk(parent_directory):
+        for file_name in files:
+            if file_name == 'card.txt':
+                file_path = os.path.join(root, file_name)
+                print(f'Processing file: {file_path}')
+                process_card_file(file_path)
+#def update_directory(parent_directory):
+#    # Specific file path to process
+#    specific_file_path = os.path.join(parent_directory, 'Lim_WP19_IT/SigPiPlusPiMinus_M0p3_low_ctau300/card.txt')
+#
+#    # Check if the specific file exists and process only this file
+#    if os.path.exists(specific_file_path):
+#        print(f'Processing file: {specific_file_path}')
+#        process_card_file(specific_file_path)
+#    else:
+#        print(f'Specified file does not exist: {specific_file_path}')
 
 
 

@@ -9,12 +9,13 @@
 //Try scaling by 200*(1/Integral())
 const float theLumi = 40.3458;
 //const float SF_sig = theLumi * 0.0001; //the lumi * SF
-const float theSF = 0.000001;
+const float theSF = 1.;//0.000001;
 bool scaleSig=true;
 
 TString detector_region = "csc"; //"csc" or "dt" 
 const TString s_mass = "0p3";
 const TString s_ct = "300";
+const float JET_BKG = 2.67;
 
 TString vName = getenv ("version");
 TString input_path = "/uscms/home/ddiaz/nobackup/BParkingLLPs/CMSSW_9_4_4/src/Stats/CMSSW_10_2_13/src/ABCD/inputs_"+vName+"/"; //OPT/"; 
@@ -42,8 +43,10 @@ std::map<TString,float> getSF(){
 
 void makeDataCard(TString type, TString sigName, TString detector_region, float y_bkg[], float y_s[], float y_s_uw[], float SF ){
   float yield_pred;
-  if (y_bkg[3] > 0)
+  if (y_bkg[3] > 0){
     yield_pred = (y_bkg[2]/y_bkg[3])*y_bkg[1];
+    if (detector_region =="csc") yield_pred = yield_pred + JET_BKG;
+  }
   else yield_pred = -1;
   if (!scaleSig) SF = 1.0;
 
@@ -78,13 +81,16 @@ void makeDataCard(TString type, TString sigName, TString detector_region, float 
   dataCard << "s_C_"<<detector_region<<" rateParam "<<" chC "<<" bkg "<<  y_bkg[2]<<" [0,"<< 7.*y_bkg[2] <<"]"<<"\n";
   dataCard << "s_D_"<<detector_region<<" rateParam "<<" chD "<<" bkg "<<  y_bkg[3]<<" [0,"<< 7.*y_bkg[3] <<"]"<<"\n";
   dataCard << "lumi             lnN 1.025  - 1.025  - 1.025  - 1.025  -"<<"\n";
+  dataCard << "pileup           lnN 1.049  - 1.049  - 1.049  - 1.049  -"<<"\n";
+  dataCard << "TriggerSF        lnN 1.016  - 1.016  - 1.016  - 1.016  -"<<"\n";
   if (detector_region =="csc"){
-    //datacard << "cluster_eff_CSC  lnN 1.0014 - 1.0014 - 1.0014 - 1.0014 -"<<"\n"; 
-    dataCard << "ME1112_veto_CSC  lnN 1.024  - 1.024  - 1.024  - 1.024  -"<<"\n";
-    dataCard << "RE1_veto_CSC     lnN 1.008  - 1.008  - 1.008  - 1.008  -"<<"\n";
-    dataCard << "MB1_veto_CSC     lnN 1.012  - 1.012  - 1.012  - 1.012  -"<<"\n";
-    dataCard << "RB1_veto_CSC     lnN 1.027  - 1.027  - 1.027  - 1.027  -"<<"\n";
+    dataCard << "cluster_eff_CSC  lnN 1.028 - 1.028 - 1.028 - 1.028 -"<<"\n"; 
+    dataCard << "ME1112_veto_CSC  lnN 1.0224  - 1.0224  - 1.0224  - 1.0224  -"<<"\n";
+    dataCard << "RE1_veto_CSC     lnN 1.0071  - 1.0071  - 1.0071  - 1.0071  -"<<"\n";
+    dataCard << "MB1Seg_veto_CSC  lnN 1.011  - 1.011  - 1.011  - 1.011  -"<<"\n";
+    dataCard << "RB1_veto_CSC     lnN 1.0256  - 1.0256  - 1.0256  - 1.0256  -"<<"\n";
     dataCard << "Muon_veto_CSC    lnN 1.005  - 1.005  - 1.005  - 1.005  -"<<"\n";
+    dataCard << "FakeRate         lnN   -   1.999  - -  - -  - -"<<"\n";
     //dataCard << "Closure_CSC      lnN   -   1.2  - -  - -  - -"<<"\n";
     if (y_s_uw[0] < 100 && y_s_uw[0] > 0 ) dataCard << "mc_stats_s_A_CSC gmN "<<y_s_uw[0]<<" "<< y_s[0]/y_s_uw[0]<<" -  - -  - -  - -" <<"\n";
     if (y_s_uw[1] < 100 && y_s_uw[1] > 0 ) dataCard << "mc_stats_s_B_CSC gmN "<<y_s_uw[1]<<" - -  "<< y_s[1]/y_s_uw[1]<<" -  - -  - -" <<"\n";
@@ -92,10 +98,11 @@ void makeDataCard(TString type, TString sigName, TString detector_region, float 
     if (y_s_uw[3] < 100 && y_s_uw[3] > 0 ) dataCard << "mc_stats_s_D_CSC gmN "<<y_s_uw[3]<<" - -  - -  - -  "<< y_s[3]/y_s_uw[3]<<"  -" <<"\n";
   }
   if (detector_region =="dt"){
-    //dataCard << "cluster_eff_DT lnN 1.0002 - 1.0002 - 1.0002 - 1.0002 -"<<"\n"; 
+    dataCard << "cluster_eff_DT lnN 1.0546 - 1.0546 - 1.0546 - 1.0546 -"<<"\n"; 
     dataCard << "RPC_match_DT   lnN 1.0377 - 1.0377 - 1.0377 - 1.0377 -"<<"\n";
-    dataCard << "Muon_veto_DT   lnN 1.001  - 1.001  - 1.001  - 1.001  -"<<"\n";
+    dataCard << "Muon_veto_DT   lnN 1.0011  - 1.0011  - 1.0011  - 1.0011  -"<<"\n";
     dataCard << "MB1_veto_DT    lnN 1.0743 - 1.0743 - 1.0743 - 1.0743 -"<<"\n";
+    dataCard << "MB1Adj_veto_DT lnN 1.0277 - 1.0277 - 1.0277 - 1.0277 -"<<"\n";
     if (y_s_uw[0] < 100 && y_s_uw[0] > 0 ) dataCard << "mc_stats_s_A_DT gmN "<<y_s_uw[0]<<" "<< y_s[0]/y_s_uw[0]<<" -  - -  - -  - -" <<"\n";
     if (y_s_uw[1] < 100 && y_s_uw[1] > 0 ) dataCard << "mc_stats_s_B_DT gmN "<<y_s_uw[1]<<" - -  "<< y_s[1]/y_s_uw[1]<<" -  - -  - -" <<"\n";
     if (y_s_uw[2] < 100 && y_s_uw[2] > 0 ) dataCard << "mc_stats_s_C_DT gmN "<<y_s_uw[2]<<" - -  - -  "<< y_s[2]/y_s_uw[2]<<" -  - -" <<"\n";
@@ -147,7 +154,7 @@ void makeTable(TString detector_region, TString Type, const std::vector<TString>
 }
 
 void doMakeInputs(TString Type, TString detector_region, TString signalType){
-TString var; 
+TString var;
   if      (detector_region == "csc") var="h_cscRechitClusterSize_FailPass";
   else if (detector_region == "dt")  var="h_dtRechitClusterSize_FailPass";
   else    {std::cout<<"bad detector region"<<std::endl;}
@@ -652,20 +659,5 @@ void MakeInputs(TString type, TString region, TString m){
 
  doMakeInputs(type, region, m);
 // doMakeInputs("OOT", "dt", "OOT");
-//
-// doMakeInputs("IT", "csc", "M0p3");
-// doMakeInputs("IT", "dt", "M0p3");
-//
-// doMakeInputs("IT", "csc", "M0p5");
-// doMakeInputs("IT", "dt", "M0p5");
-//
-// doMakeInputs("IT", "csc", "M1p0");
-// doMakeInputs("IT", "dt", "M1p0");
-//
-// doMakeInputs("IT", "csc", "M1p0");
-// doMakeInputs("IT", "dt", "M1p0");
-//
-// doMakeInputs("IT", "csc", "M3p0");
-// doMakeInputs("IT", "dt", "M3p0");
 
 }
