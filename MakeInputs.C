@@ -7,15 +7,38 @@
 #include <fstream>
 
 //Try scaling by 200*(1/Integral())
-const float theLumi = 40.3458;
+const float theLumi = 41.58;
+//const float theLumi = 8.09;//41.58;
 //const float SF_sig = theLumi * 0.0001; //the lumi * SF
-const float theSF = 1.;//0.000001;
+const float theSF = 1.;//0.000001; --old method, I do this dynamically now for each model point; set at 1. to do nothing.
 bool scaleSig=true;
-
+const bool blind = false;
 TString detector_region = "csc"; //"csc" or "dt" 
 const TString s_mass = "0p3";
 const TString s_ct = "300";
-const float JET_BKG = 2.67;
+const float JET_BKG_CSC = 155.858;
+const float JET_BKG_CSC_B = 41.1428;
+const float JET_BKG_CSC_C = 16128.4;
+const float JET_BKG_CSC_D = 5700.77;
+
+const float JET_BKG_CSC_err = 12.4843;
+const float JET_BKG_CSC_B_err = 6.41426;
+const float JET_BKG_CSC_C_err = 126.998;
+const float JET_BKG_CSC_D_err = 75.5035;
+
+//--- D Part 2
+//const float JET_BKG_CSC = 21.2315;
+//const float JET_BKG_CSC_B = 5.6903;
+//const float JET_BKG_CSC_C = 2215.81;
+//const float JET_BKG_CSC_D = 792.862;
+//
+//const float JET_BKG_CSC_err = 4.60777;
+//const float JET_BKG_CSC_B_err = 2.38543;
+//const float JET_BKG_CSC_C_err = 47.0724;
+//const float JET_BKG_CSC_D_err = 28.1578;
+
+
+const float JET_BKG_DT = 0.0;
 
 TString vName = getenv ("version");
 TString input_path = "/uscms/home/ddiaz/nobackup/BParkingLLPs/CMSSW_9_4_4/src/Stats/CMSSW_10_2_13/src/ABCD/inputs_"+vName+"/"; //OPT/"; 
@@ -43,12 +66,27 @@ std::map<TString,float> getSF(){
 
 void makeDataCard(TString type, TString sigName, TString detector_region, float y_bkg[], float y_s[], float y_s_uw[], float SF ){
   float yield_pred;
-  if (y_bkg[3] > 0){
-    yield_pred = (y_bkg[2]/y_bkg[3])*y_bkg[1];
-    if (detector_region =="csc") yield_pred = yield_pred + JET_BKG;
+  float a, b,c,d;
+  float JA, JB, JC, JD, eJA, eJB, eJC, eJD;
+  a = y_bkg[0] ;
+  b = y_bkg[1] ;
+  c = y_bkg[2] ;
+  d = y_bkg[3] ;
+  if (d > 0){
+    yield_pred = (c/d)*b;
   }
   else yield_pred = -1;
   if (!scaleSig) SF = 1.0;
+  
+  JA = JET_BKG_CSC;
+  JB = JET_BKG_CSC_B;
+  JC = JET_BKG_CSC_C;
+  JD = JET_BKG_CSC_D;
+
+  eJA = JET_BKG_CSC_err;
+  eJB = JET_BKG_CSC_B_err;
+  eJC = JET_BKG_CSC_C_err;
+  eJD = JET_BKG_CSC_D_err;
 
   y_s[0] = SF*y_s[0]; 
   y_s[1] = SF*y_s[1]; 
@@ -62,51 +100,61 @@ void makeDataCard(TString type, TString sigName, TString detector_region, float 
   dataCard << "# System: "<<detector_region<<"\n";
   dataCard << "# Signal: "<<sigName<<"\n";
   dataCard << "# Note: Uses the Arrays"<<"\n";
-  dataCard << "# SF_tot =  40.3458 * "<<SF<<" ="<<theLumi*SF<<" //the lumi * SF"<<"\n";
+  dataCard << "# SF_tot =  "<<theLumi<<" * "<<SF<<" ="<<theLumi*SF<<" //the lumi * SF"<<"\n";
   dataCard << "imax 4 \n";
-  dataCard << "jmax 1 \n";
+  dataCard << "jmax 2 \n";
   dataCard << "kmax * \n";
   dataCard << "------------------------------------------------ \n";
   dataCard << "------------------------------------------------ \n";
   dataCard << "bin"<<" chA "<<" chB "<<" chC "<<" chD "<<"\n";
-  dataCard << "observation "<<yield_pred<<" "<<y_bkg[1]<<" "<<y_bkg[2]<<" "<<y_bkg[3]<<"\n";
+  if(blind) dataCard << "observation "<<yield_pred+JET_BKG_CSC<<" "<<b<<" "<<c<<" "<<d<<"\n";
+  else      dataCard << "observation "<<a<<" "<<b<<" "<<c<<" "<<d<<"\n";  
   dataCard << "------------------------------------------------ \n";
-  dataCard << "bin"<<" chA "<<" chA "<<" chB "<<" chB "<<" chC "<<" chC "<<" chD "<<" chD "<<"\n";
-  dataCard << "process "<<" 0 "<<" 1 "<<" 0 "<<" 1 "<<" 0 "<<" 1 "<<" 0 "<<" 1 "<<"\n";
-  dataCard << "process"<<" sig "<<" bkg "<<" sig "<<" bkg "<<" sig "<<" bkg "<<" sig "<<" bkg "<<"\n";
-  dataCard << "rate "<<y_s[0]<<" 1 "<<y_s[1]<<" 1 "<<y_s[2]<<" 1 "<<y_s[3]<<" 1 "<<"\n";
-  dataCard << "------------------------------------------------ \n";
-  dataCard << "s_A_"<<detector_region<<" rateParam "<<" chA "<<" bkg "<<" (@0*@1/@2) " <<"s_B_"<<detector_region<<",s_C_"<<detector_region<<",s_D_"<<detector_region<<"\n";
-  dataCard << "s_B_"<<detector_region<<" rateParam "<<" chB "<<" bkg "<<  y_bkg[1]<<" [0,"<< 7.*y_bkg[1] <<"]"<<"\n";
-  dataCard << "s_C_"<<detector_region<<" rateParam "<<" chC "<<" bkg "<<  y_bkg[2]<<" [0,"<< 7.*y_bkg[2] <<"]"<<"\n";
-  dataCard << "s_D_"<<detector_region<<" rateParam "<<" chD "<<" bkg "<<  y_bkg[3]<<" [0,"<< 7.*y_bkg[3] <<"]"<<"\n";
-  dataCard << "lumi             lnN 1.025  - 1.025  - 1.025  - 1.025  -"<<"\n";
-  dataCard << "pileup           lnN 1.049  - 1.049  - 1.049  - 1.049  -"<<"\n";
-  dataCard << "TriggerSF        lnN 1.016  - 1.016  - 1.016  - 1.016  -"<<"\n";
+  dataCard << "bin"<<" chA "<<" chA "<< " chA "<<" chB "<<" chB "<<" chB "<<" chC "<<" chC "<<" chC "<<" chD "<<" chD "<<" chD "<<"\n";
+  dataCard << "process "<<" 0 "<<" 1 "<<" 2 "<<" 0 "<<" 1 "<<" 2 "<<" 0 "<<" 1 "<<" 2 "<<" 0 "<<" 1 "<<" 2"<<"\n";
+  dataCard << "process"<<" sig "<<" bkg "<<" bkg2 "<<" sig "<<" bkg "<<" bkg2 "<<" sig "<<" bkg "<<" bkg2 "<<" sig "<<" bkg "<<" bkg2 "<<"\n";
   if (detector_region =="csc"){
-    dataCard << "cluster_eff_CSC  lnN 1.028 - 1.028 - 1.028 - 1.028 -"<<"\n"; 
-    dataCard << "ME1112_veto_CSC  lnN 1.0224  - 1.0224  - 1.0224  - 1.0224  -"<<"\n";
-    dataCard << "RE1_veto_CSC     lnN 1.0071  - 1.0071  - 1.0071  - 1.0071  -"<<"\n";
-    dataCard << "MB1Seg_veto_CSC  lnN 1.011  - 1.011  - 1.011  - 1.011  -"<<"\n";
-    dataCard << "RB1_veto_CSC     lnN 1.0256  - 1.0256  - 1.0256  - 1.0256  -"<<"\n";
-    dataCard << "Muon_veto_CSC    lnN 1.005  - 1.005  - 1.005  - 1.005  -"<<"\n";
-    dataCard << "FakeRate         lnN   -   1.999  - -  - -  - -"<<"\n";
-    //dataCard << "Closure_CSC      lnN   -   1.2  - -  - -  - -"<<"\n";
-    if (y_s_uw[0] < 100 && y_s_uw[0] > 0 ) dataCard << "mc_stats_s_A_CSC gmN "<<y_s_uw[0]<<" "<< y_s[0]/y_s_uw[0]<<" -  - -  - -  - -" <<"\n";
-    if (y_s_uw[1] < 100 && y_s_uw[1] > 0 ) dataCard << "mc_stats_s_B_CSC gmN "<<y_s_uw[1]<<" - -  "<< y_s[1]/y_s_uw[1]<<" -  - -  - -" <<"\n";
-    if (y_s_uw[2] < 100 && y_s_uw[2] > 0 ) dataCard << "mc_stats_s_C_CSC gmN "<<y_s_uw[2]<<" - -  - -  "<< y_s[2]/y_s_uw[2]<<" -  - -" <<"\n";
-    if (y_s_uw[3] < 100 && y_s_uw[3] > 0 ) dataCard << "mc_stats_s_D_CSC gmN "<<y_s_uw[3]<<" - -  - -  - -  "<< y_s[3]/y_s_uw[3]<<"  -" <<"\n";
+    dataCard << "rate "<<y_s[0]<<" 1 "<<" "<<JA<<" "<<y_s[1]<<" 1 "<<JB<<" "<<y_s[2]<<" 1 "<<JC<<" "<<y_s[3]<<" 1 "<<JD<<"\n";
+  }
+  else{
+    //dataCard << "rate "<<y_s[0]<<" 1 "<<" "<<JET_BKG_DT<<" "<<y_s[1]<<" 1 "<<y_s[2]<<" 1 "<<y_s[3]<<" 1 "<<"\n";
+    dataCard << "rate "<<y_s[0]<<" 1 "<<" "<<JA<<" "<<y_s[1]<<" 1 "<<JB<<" "<<y_s[2]<<" 1 "<<JC<<" "<<y_s[3]<<" 1 "<<JD<<"\n";
+  }
+  dataCard << "------------------------------------------------ \n";
+  dataCard << "lumi             lnN 1.025  - - 1.025  - - 1.025  - - 1.025  - -"<<"\n";
+  dataCard << "pileup           lnN 1.049  - - 1.049  - - 1.049  - - 1.049  - -"<<"\n";
+  dataCard << "TriggerSF        lnN 1.016  - - 1.016  - - 1.016  - - 1.016  - -"<<"\n";
+  dataCard << "s_A_"<<detector_region<<" rateParam "<<" chA "<<" bkg "<<" (@0*@1/@2) " <<"s_B_"<<detector_region<<",s_C_"<<detector_region<<",s_D_"<<detector_region<<"\n";
+  dataCard << "s_B_"<<detector_region<<" rateParam "<<" chB "<<" bkg "<<  b-JB<<" [0,"<< 7.*(b-JB) <<"]"<<"\n";
+  dataCard << "s_C_"<<detector_region<<" rateParam "<<" chC "<<" bkg "<<  c-JC<<" [0,"<< 7.*(c-JC) <<"]"<<"\n";
+  dataCard << "s_D_"<<detector_region<<" rateParam "<<" chD "<<" bkg "<<  d-JD<<" [0,"<< 7.*(d-JD) <<"]"<<"\n";
+  if (detector_region =="csc"){
+    dataCard << "cluster_eff_CSC  lnN 1.028   - - 1.028  - - 1.028  - - 1.028  - -"<<"\n"; 
+    dataCard << "ME1112_veto_CSC  lnN 1.0224  - - 1.0224 - - 1.0224 - - 1.0224 - -"<<"\n";
+    dataCard << "RE1_veto_CSC     lnN 1.0071  - - 1.0071 - - 1.0071 - - 1.0071 - -"<<"\n";
+    dataCard << "MB1Seg_veto_CSC  lnN 1.011   - - 1.011  - - 1.011  - - 1.011  - -"<<"\n";
+    dataCard << "RB1_veto_CSC     lnN 1.0256  - - 1.0256 - - 1.0256 - - 1.0256 - -"<<"\n";
+    dataCard << "Muon_veto_CSC    lnN 1.005   - - 1.005  - - 1.005  - - 1.005  - -"<<"\n";
+    dataCard << "NJets_A          lnN   - - "<< 1.+(eJA/JA) <<"  - - -  - - -  - - -"<<"\n";
+    dataCard << "NJets_B          lnN   - - -  - - "<< 1.+(eJB/JB) <<"  - - -  - - -"<<"\n";
+    dataCard << "NJets_C          lnN   - - -  - - -  - - "<< 1.+(eJC/JC) <<"  - - -"<<"\n";
+    dataCard << "NJets_D          lnN   - - -  - - -  - - -  - - "<< 1.+(eJD/JD) <<"\n";
+    dataCard << "FRMethod_CSC     lnN   -  - 1.082410983  - - 1.082410983  - - 1.082410983  - - 1.082410983"<<"\n";
+    if (y_s_uw[0] < 100 && y_s_uw[0] > 0 ) dataCard << "mc_stats_s_A_CSC gmN "<<y_s_uw[0]<<" "<< y_s[0]/y_s_uw[0]<<" - -   - - -  - - -  - - -" <<"\n";
+    if (y_s_uw[1] < 100 && y_s_uw[1] > 0 ) dataCard << "mc_stats_s_B_CSC gmN "<<y_s_uw[1]<<" - - -  "<< y_s[1]/y_s_uw[1]<<" - -  - - -  - - -" <<"\n";
+    if (y_s_uw[2] < 100 && y_s_uw[2] > 0 ) dataCard << "mc_stats_s_C_CSC gmN "<<y_s_uw[2]<<" - - -  - - -  "<< y_s[2]/y_s_uw[2]<<" - -  - - -" <<"\n";
+    if (y_s_uw[3] < 100 && y_s_uw[3] > 0 ) dataCard << "mc_stats_s_D_CSC gmN "<<y_s_uw[3]<<" - - -  - - -  - - -  "<< y_s[3]/y_s_uw[3]<<"  - -" <<"\n";
   }
   if (detector_region =="dt"){
-    dataCard << "cluster_eff_DT lnN 1.0546 - 1.0546 - 1.0546 - 1.0546 -"<<"\n"; 
-    dataCard << "RPC_match_DT   lnN 1.0377 - 1.0377 - 1.0377 - 1.0377 -"<<"\n";
-    dataCard << "Muon_veto_DT   lnN 1.0011  - 1.0011  - 1.0011  - 1.0011  -"<<"\n";
-    dataCard << "MB1_veto_DT    lnN 1.0743 - 1.0743 - 1.0743 - 1.0743 -"<<"\n";
-    dataCard << "MB1Adj_veto_DT lnN 1.0277 - 1.0277 - 1.0277 - 1.0277 -"<<"\n";
-    if (y_s_uw[0] < 100 && y_s_uw[0] > 0 ) dataCard << "mc_stats_s_A_DT gmN "<<y_s_uw[0]<<" "<< y_s[0]/y_s_uw[0]<<" -  - -  - -  - -" <<"\n";
-    if (y_s_uw[1] < 100 && y_s_uw[1] > 0 ) dataCard << "mc_stats_s_B_DT gmN "<<y_s_uw[1]<<" - -  "<< y_s[1]/y_s_uw[1]<<" -  - -  - -" <<"\n";
-    if (y_s_uw[2] < 100 && y_s_uw[2] > 0 ) dataCard << "mc_stats_s_C_DT gmN "<<y_s_uw[2]<<" - -  - -  "<< y_s[2]/y_s_uw[2]<<" -  - -" <<"\n";
-    if (y_s_uw[3] < 100 && y_s_uw[3] > 0 ) dataCard << "mc_stats_s_D_DT gmN "<<y_s_uw[3]<<" - -  - -  - -  "<< y_s[3]/y_s_uw[3]<<"  -" <<"\n";
+    dataCard << "cluster_eff_DT lnN 1.0546 - - 1.0546 - - 1.0546 - -  1.0546 - -"<<"\n"; 
+    dataCard << "RPC_match_DT   lnN 1.0377 - - 1.0377 - - 1.0377 - -  1.0377 - -"<<"\n";
+    dataCard << "Muon_veto_DT   lnN 1.0011 - - 1.0011 - - 1.0011 - -  1.0011 - -"<<"\n";
+    dataCard << "MB1_veto_DT    lnN 1.0743 - - 1.0743 - - 1.0743 - -  1.0743 - -"<<"\n";
+    dataCard << "MB1Adj_veto_DT lnN 1.0277 - - 1.0277 - - 1.0277 - -  1.0277 - -"<<"\n";
+    if (y_s_uw[0] < 100 && y_s_uw[0] > 0 ) dataCard << "mc_stats_s_A_DT gmN "<<y_s_uw[0]<<" "<< y_s[0]/y_s_uw[0]<<" - -  - - -  - - -  - - -" <<"\n";
+    if (y_s_uw[1] < 100 && y_s_uw[1] > 0 ) dataCard << "mc_stats_s_B_DT gmN "<<y_s_uw[1]<<" - - - "<< y_s[1]/y_s_uw[1]<<" - -  - - -  - - -" <<"\n";
+    if (y_s_uw[2] < 100 && y_s_uw[2] > 0 ) dataCard << "mc_stats_s_C_DT gmN "<<y_s_uw[2]<<" - - -  - - -  "<< y_s[2]/y_s_uw[2]<<" - -  - - -" <<"\n";
+    if (y_s_uw[3] < 100 && y_s_uw[3] > 0 ) dataCard << "mc_stats_s_D_DT gmN "<<y_s_uw[3]<<" - - -  - - -  - - -  "<< y_s[3]/y_s_uw[3]<<" - -" <<"\n";
 
   }
   dataCard.close();
@@ -116,8 +164,9 @@ TString makeLine(TString detector_region, TString sigName, TString Type, float y
   float yield_pred, yield_obs, sigma_pred;
   yield_pred = (yield_C/yield_D)*yield_B;
   sigma_pred = yield_pred*sqrt(1./yield_B + 1./yield_C + 1./yield_D);
-  if (Type=="IT") yield_obs = yield_pred;
-  else yield_obs = yield_A;
+  //if (Type=="IT") yield_obs = yield_pred;
+  //else yield_obs = yield_A;
+  yield_obs = yield_A;
   
   TString line;
   line.Form("& & &%s & %f & %f & %f & %f$\\pm$%f & %f\\\\", detector_region.Data(), yield_B, yield_C, yield_D, yield_pred, sigma_pred, yield_obs);
@@ -618,10 +667,10 @@ TString var;
     }
     else {std::cout<<"Incorrect Type"<<std::endl; break;}
   }
-  float y_A = histos_PassN[0]->GetBinContent(2);  //PASS NrecHits PASS V2(dPhi) data
-  float y_B = histos_FailN[0]->GetBinContent(2);  //PASS NrecHits FAIL V2(dPhi) data
-  float y_C = histos_PassN[0]->GetBinContent(1);  //FAIL NrecHits PASS V2(dPhi) data
-  float y_D = histos_FailN[0]->GetBinContent(1);  //FAIL NrecHits FAIL V2(dPhi) data
+  //float y_A = histos_PassN[0]->GetBinContent(2);  //PASS NrecHits PASS V2(dPhi) data
+  //float y_B = histos_FailN[0]->GetBinContent(2);  //PASS NrecHits FAIL V2(dPhi) data
+  //float y_C = histos_PassN[0]->GetBinContent(1);  //FAIL NrecHits PASS V2(dPhi) data
+  //float y_D = histos_FailN[0]->GetBinContent(1);  //FAIL NrecHits FAIL V2(dPhi) data
      
   y_bkg[0] = histos_PassN[0]->GetBinContent(2);  //PASS NrecHits PASS V2(dPhi) data
   y_bkg[1] = histos_FailN[0]->GetBinContent(2);  //PASS NrecHits FAIL V2(dPhi) data
@@ -648,7 +697,7 @@ TString var;
     //std::cout<<y_s_uw[0]<<" "<<y_s_uw[1]<<" "<<y_s_uw[2]<<" "<<y_s_uw[3]<<endl;
     //makeDataCard(Type,names[i].second, detector_region, y_B, y_C, y_D, y_s_A, y_s_B, y_s_C, y_s_D, theSF);
     makeDataCard(Type,names[i].second, detector_region, y_bkg, y_s, y_s_uw, theSF);
-    tableLine.push_back(makeLine(detector_region,names[i].second, Type, y_A, y_B, y_C, y_D, y_s_A));
+    tableLine.push_back(makeLine(detector_region,names[i].second, Type, y_bkg[0], y_bkg[1], y_bkg[2], y_bkg[3], y_s_A));
   }
   makeTable(detector_region,Type, tableLine);
 
