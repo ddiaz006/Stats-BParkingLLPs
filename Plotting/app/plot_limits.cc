@@ -32,7 +32,7 @@ bool plotLHCb = false;
 
 const float lumi = 5;
 const float minLHCb = 5e-13;//5e-8;
-const float min = 5e-6;
+const float min = 5e-7;
 const float max = 0.1;
 
 //exp/obs limit line color
@@ -50,7 +50,8 @@ const float bottomMargin = 0.10;
 //CMS STANDARD
 TString extraText   = "Preliminary";
 //TString lumiText = "41.6 fb^{-1} (13 TeV)";
-TString lumiText = "40.35 fb^{-1} (13 TeV)";
+TString lumiText = "41.58 fb^{-1} (13 TeV)";
+//TString lumiText = "8.09 fb^{-1} (13 TeV)";
 
 bool AddCMS( TCanvas* C )
 {
@@ -130,6 +131,7 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
     g->SetMarkerStyle(31);
     g->SetMarkerColor(c);
     g->SetMarkerSize(1);
+    g->SetLineWidth(3);
   }
   if( type == "band"){
     g->SetFillColorAlpha(c, 0.15);
@@ -167,7 +169,7 @@ void readData(const char* fileName, float x[], float y[], int& nPoints) {
     while (nPoints < MAX_POINTS && file >> x[nPoints] >> y[nPoints]) {
         //x-coords are in meters in file
         x[nPoints] = 1000.*x[nPoints];
-        std::cout<< x[nPoints]<<"   "<<y[nPoints]<<std::endl;
+        //std::cout<< x[nPoints]<<"   "<<y[nPoints]<<std::endl;
         nPoints++;
     }
 
@@ -214,7 +216,9 @@ TString s_region="";
   std::map<float, Limit> mymap_pihad;
 
   size_t lastindex = inputList.find_last_of(".");
-  std::string rawName = inputList.substr(0, lastindex);
+  size_t firstindex = inputList.find_last_of("/");
+  //std::string rawName = inputList.substr(0, lastindex);
+  std::string rawName = inputList.substr(firstindex+1, lastindex-firstindex-1);
 
   std::cout<<"rawName: "<<rawName<<std::endl;
 
@@ -261,8 +265,9 @@ TString s_region="";
 	  tmpLimit.exp0p84 = limit*limitSF;
 	  tree->GetEntry(4);
 	  tmpLimit.exp0p975 = limit*limitSF;
-	  //tree->GetEntry(5);
-	  tmpLimit.obs = tmpLimit.exp0p5;
+	  tree->GetEntry(5);
+	  //tmpLimit.obs = tmpLimit.exp0p5;
+	  tmpLimit.obs = limit*limitSF;
 
 	  //std::cout << "ctau: " << ctau << "-> " << tmpLimit.exp0p025 << " " << tmpLimit.exp0p16 << " " << tmpLimit.exp0p5 << " " << tmpLimit.exp0p84<< " " 
           //          << tmpLimit.exp0p975 << " " << tmpLimit.obs << "   SF="<<limitSF <<std::endl;
@@ -292,7 +297,7 @@ TString s_region="";
   std::cout<<"Pi0"<<std::endl;
   for ( auto tmp : mymap_pi0 ){std::cout << "cTau: " << tmp.first << " " << tmp.second.exp0p5 << std::endl;}
   std::cout<<"Pihad"<<std::endl;
-  for ( auto tmp : mymap_pihad ){std::cout << "cTau: " << tmp.first << " " << tmp.second.exp0p5 << std::endl;}
+  for ( auto tmp : mymap_pihad ){std::cout << "cTau: " << tmp.first << " " << tmp.second.exp0p5 <<" "<<tmp.second.exp0p16<<" "<<tmp.second.exp0p84<<" "<<tmp.second.obs<< std::endl;}
   std::cout<<"end curve check"<<std::endl;
   TFile* out   = new TFile("out_test.root", "recreate");
 
@@ -405,7 +410,7 @@ TString s_region="";
   //formatting
   setLineQualities(gExp_pihad, minimum, Color_lim_pihad, "exp", 9);
   setLineQualities(gOneS_pihad, minimum, Color_lim_pihad, "band", 9);
-  setLineQualities(gObs_pihad, minimum, Color_lim_pihad, "obs", 9);
+  setLineQualities(gObs_pihad, minimum, Color_lim_pihad, "obs", 1);
 //---------- end Pihad
 //end lines
   TCanvas* c = new TCanvas( "c", "c", 2119, 33, 800, 700 );
@@ -415,7 +420,8 @@ TString s_region="";
   //gTwoS_pi0->Draw("AF");
   //gObs_pi0->Draw("L");
   gExp_pihad->Draw("AL");
-  gOneS_pihad->Draw("F");
+  gOneS_pihad->Draw("F same");
+  gObs_pihad->Draw("L same");
 //  gExp_pi0->Draw("L");
 //  gOneS_pi0->Draw("F");
 //  if(plotLHCb) graph_lhcb_0p5->Draw("L");
@@ -429,6 +435,23 @@ TString s_region="";
   setOffsets(gExp_pi0);
   setOffsets(gOneS_pi0);
   setOffsets(gObs_pi0);
+
+  TLegend* leg0 = new TLegend( 0.15, 0.25, 0.5, 0.35, NULL, "brNDC" );
+  leg0->SetBorderSize(0);
+  leg0->SetLineColor(1);
+  leg0->SetLineStyle(1);
+  leg0->SetLineWidth(1);
+  //leg0->SetFillColor(0);
+  leg0->SetFillColorAlpha(kBlue,0.0 );
+  //leg0->SetFillStyle(1001);
+  leg0->SetTextSize(0.04);
+  leg0->SetNColumns(1);
+  
+  //leg0->AddEntry( gObs_55, " Observed limit (95% CL)", "l" );
+  leg0->AddEntry( (TObject*)0, " 95% CL", "" );
+  leg0->AddEntry( gObs_pihad, " Observed limit", "l" );
+  leg0->AddEntry( gExp_pihad, " Median expected limit", "l" );
+
 
   TLegend* leg = new TLegend( 0.15, 0.15, 0.5, 0.25, NULL, "brNDC" );
   setLegendQualities(leg,1);
@@ -449,6 +472,7 @@ TString s_region="";
 
   leg->Draw("SAME");
   leg2->Draw("SAME");
+  leg0->Draw("SAME");
 
   //Phi Mass label
   TLatex latexMass;
