@@ -12,7 +12,8 @@ def process_card_file(file_path):
     # Identify the rate line and calculate the scale factor (SF)
     rate_line_index = next(i for i, line in enumerate(lines) if line.strip().startswith('rate'))
     rate_values = lines[rate_line_index].split()[1:]  # skip the 'rate' keyword
-    indices_to_use = [0, 2, 4, 6]
+    #indices_to_use = [0, 3, 5, 7] # when only chA had second bkg
+    indices_to_use = [0, 3, 6, 9]
 
     values_to_use = [float(rate_values[i]) for i in indices_to_use]
     #sf = 1.0/sum(values_to_use) / len(values_to_use)
@@ -24,7 +25,7 @@ def process_card_file(file_path):
     new_scaled_rate_values = []
     for i, value in enumerate(rate_values):
         float_value = float(value)  # Convert every value to float first
-        if i%2 == 0:
+        if i in indices_to_use:
             new_value = float_value * sf
             new_rate_values.append(f'{new_value:.8f}')
             new_scaled_rate_values.append(new_value)  # Append scaled value
