@@ -152,10 +152,12 @@ void setLegendQualities(TLegend* l, int nColumns){
   l->SetFillColor(0);
   l->SetFillStyle(1001);
   l->SetTextSize(0.05);
-//  if(plotLHCb)l->SetTextSize(0.01);
+  if(plotLHCb)l->SetTextSize(0.02);
   l->SetNColumns(nColumns);
 
 }
+
+
 
 void readData(const char* fileName, float x[], float y[], int& nPoints) {
     std::cout<<"Reading LHCb data"<<std::endl;
@@ -424,8 +426,8 @@ TString s_region="";
   gObs_pihad->Draw("L same");
 //  gExp_pi0->Draw("L");
 //  gOneS_pi0->Draw("F");
-//  if(plotLHCb) graph_lhcb_0p5->Draw("L");
-//  if(plotLHCb) graph_lhcb_1p0->Draw("L");
+  if(plotLHCb) graph_lhcb_0p5->Draw("L");
+  if(plotLHCb) graph_lhcb_1p0->Draw("L");
   gExp_pihad->GetXaxis()->SetTitleSize(0.05);
   gExp_pihad->GetYaxis()->SetTitleSize(0.05);
   c->Update();
