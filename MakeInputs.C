@@ -21,11 +21,15 @@ const float JET_BKG_CSC_B = 41.1428;
 const float JET_BKG_CSC_C = 16128.4;
 const float JET_BKG_CSC_D = 5700.77;
 
-const float JET_BKG_CSC_err = 12.4843;
-const float JET_BKG_CSC_B_err = 6.41426;
-const float JET_BKG_CSC_C_err = 126.998;
-const float JET_BKG_CSC_D_err = 75.5035;
+const float JET_BKG_CSC_err_up = 31.1538;
+const float JET_BKG_CSC_B_err_up = 9.61949;
+const float JET_BKG_CSC_C_err_up = 238.116;
+const float JET_BKG_CSC_D_err_up = 93.202;
 
+const float JET_BKG_CSC_err_dn = 21.6196;
+const float JET_BKG_CSC_B_err_dn = 6.48297;
+const float JET_BKG_CSC_C_err_dn = 230.122;
+const float JET_BKG_CSC_D_err_dn = 90.5997;
 //--- D Part 2
 //const float JET_BKG_CSC = 21.2315;
 //const float JET_BKG_CSC_B = 5.6903;
@@ -65,9 +69,25 @@ std::map<TString,float> getSF(){
 }
 
 void makeDataCard(TString type, TString sigName, TString detector_region, float y_bkg[], float y_s[], float y_s_uw[], float SF ){
+  // Branching fractions
+  float bf = 1.0;
+  if     (sigName.Contains("M0p3") && sigName.Contains("PiPlusPiMinus")) bf = 0.5285923122008166;
+  else if(sigName.Contains("M0p5") && sigName.Contains("PiPlusPiMinus")) bf = 0.5957314439913929;
+  else if(sigName.Contains("M1p0") && sigName.Contains("PiPlusPiMinus")) bf = 0.763819353368388;
+  else if(sigName.Contains("M2p0") && sigName.Contains("PiPlusPiMinus")) bf = 0.76300990;
+  else if(sigName.Contains("M3p0") && sigName.Contains("PiPlusPiMinus")) bf = 0.9177560507698499;
+  else if(sigName.Contains("M0p3") && sigName.Contains("Pi0")) bf = 0.2642961561004083;
+  else if(sigName.Contains("M0p5") && sigName.Contains("Pi0")) bf = 0.29786572199569644;
+  else if(sigName.Contains("M1p0") && sigName.Contains("Pi0")) bf = 0.21805646823898678;
+  else if(sigName.Contains("M2p0") && sigName.Contains("Pi0")) bf = 0.76300990;
+  else if(sigName.Contains("M3p0") && sigName.Contains("Pi0")) bf = 0.9177560507698499;
+  else bf=1.0;
+  
+
+
   float yield_pred;
   float a, b,c,d;
-  float JA, JB, JC, JD, eJA, eJB, eJC, eJD;
+  float JA, JB, JC, JD, eJA_up, eJB_up, eJC_up, eJD_up, eJA_dn, eJB_dn, eJC_dn, eJD_dn;
   a = y_bkg[0] ;
   b = y_bkg[1] ;
   c = y_bkg[2] ;
@@ -83,15 +103,20 @@ void makeDataCard(TString type, TString sigName, TString detector_region, float 
   JC = JET_BKG_CSC_C;
   JD = JET_BKG_CSC_D;
 
-  eJA = JET_BKG_CSC_err;
-  eJB = JET_BKG_CSC_B_err;
-  eJC = JET_BKG_CSC_C_err;
-  eJD = JET_BKG_CSC_D_err;
+  eJA_up = JET_BKG_CSC_err_up;
+  eJB_up = JET_BKG_CSC_B_err_up;
+  eJC_up = JET_BKG_CSC_C_err_up;
+  eJD_up = JET_BKG_CSC_D_err_up;
 
-  y_s[0] = SF*y_s[0]; 
-  y_s[1] = SF*y_s[1]; 
-  y_s[2] = SF*y_s[2]; 
-  y_s[3] = SF*y_s[3]; 
+  eJA_dn= JET_BKG_CSC_err_dn;
+  eJB_dn= JET_BKG_CSC_B_err_dn;
+  eJC_dn= JET_BKG_CSC_C_err_dn;
+  eJD_dn= JET_BKG_CSC_D_err_dn;
+
+  y_s[0] = bf*SF*y_s[0]; 
+  y_s[1] = bf*SF*y_s[1]; 
+  y_s[2] = bf*SF*y_s[2]; 
+  y_s[3] = bf*SF*y_s[3]; 
   std::cout<<"Making: "+input_path+"datacards/"+sigName+"-"+type+"_"+detector_region+".txt"<<endl;
   //std::cout<<"TheSF: "<<SF<<std::endl;
   ofstream dataCard;
@@ -100,7 +125,7 @@ void makeDataCard(TString type, TString sigName, TString detector_region, float 
   dataCard << "# System: "<<detector_region<<"\n";
   dataCard << "# Signal: "<<sigName<<"\n";
   dataCard << "# Note: Uses the Arrays"<<"\n";
-  dataCard << "# SF_tot =  "<<theLumi<<" * "<<SF<<" ="<<theLumi*SF<<" //the lumi * SF"<<"\n";
+  dataCard << "# SF_tot =  "<<theLumi<<" * "<<SF<<" * "<<bf<<" ="<<theLumi*SF*bf<<" //the lumi * SF *bf"<<"\n";
   dataCard << "imax 4 \n";
   dataCard << "jmax 2 \n";
   dataCard << "kmax * \n";
@@ -121,6 +146,7 @@ void makeDataCard(TString type, TString sigName, TString detector_region, float 
     dataCard << "rate "<<y_s[0]<<" 1 "<<" "<<JA<<" "<<y_s[1]<<" 1 "<<JB<<" "<<y_s[2]<<" 1 "<<JC<<" "<<y_s[3]<<" 1 "<<JD<<"\n";
   }
   dataCard << "------------------------------------------------ \n";
+  if(sigName.Contains("M2p0") && sigName.Contains("PiPlusPiMinus")) dataCard << "BF             lnN 1.0016573641  - - 1.0016573641  - - 1.0016573641  - - 1.0016573641  - -"<<"\n";
   dataCard << "lumi             lnN 1.025  - - 1.025  - - 1.025  - - 1.025  - -"<<"\n";
   dataCard << "pileup           lnN 1.049  - - 1.049  - - 1.049  - - 1.049  - -"<<"\n";
   dataCard << "TriggerSF        lnN 1.016  - - 1.016  - - 1.016  - - 1.016  - -"<<"\n";
@@ -139,10 +165,10 @@ void makeDataCard(TString type, TString sigName, TString detector_region, float 
     dataCard << "ClusterTime_CSC  lnN 1.003   - - 1.003  - - 1.003  - - 1.003  - -"<<"\n";
     dataCard << "TimeSpread_CSC   lnN 1.0779   - - 1.0779  - - 1.0779  - - 1.0779  - -"<<"\n";
     dataCard << "CrossSectionUnc  lnN 1.0086   - - 1.0086  - - 1.0086  - - 1.0086  - -"<<"\n";
-    dataCard << "NJets_A          lnN   - - "<< 1.+(eJA/JA) <<"  - - -  - - -  - - -"<<"\n";
-    dataCard << "NJets_B          lnN   - - -  - - "<< 1.+(eJB/JB) <<"  - - -  - - -"<<"\n";
-    dataCard << "NJets_C          lnN   - - -  - - -  - - "<< 1.+(eJC/JC) <<"  - - -"<<"\n";
-    dataCard << "NJets_D          lnN   - - -  - - -  - - -  - - "<< 1.+(eJD/JD) <<"\n";
+    dataCard << "NJets_A          lnN   - - "<< 1.-(eJA_dn/JA)<<"/"<<1.+(eJA_up/JA) <<"  - - -  - - -  - - -"<<"\n";
+    dataCard << "NJets_B          lnN   - - -  - - "<<1.-(eJB_dn/JB)<<"/"<< 1.+(eJB_up/JB) <<"  - - -  - - -"<<"\n";
+    dataCard << "NJets_C          lnN   - - -  - - -  - - "<<1.-(eJC_dn/JC)<<"/"<< 1.+(eJC_up/JC) <<"  - - -"<<"\n";
+    dataCard << "NJets_D          lnN   - - -  - - -  - - -  - - "<<1.-(eJD_dn/JD)<<"/"<< 1.+(eJD_up/JD) <<"\n";
     //dataCard << "FRMethod_CSC     lnN   -  - 1.082410983  - - 1.082410983  - - 1.082410983  - - 1.082410983"<<"\n";
     if (y_s_uw[0] < 100 && y_s_uw[0] > 0 ) dataCard << "mc_stats_s_A_CSC gmN "<<y_s_uw[0]<<" "<< y_s[0]/y_s_uw[0]<<" - -   - - -  - - -  - - -" <<"\n";
     if (y_s_uw[1] < 100 && y_s_uw[1] > 0 ) dataCard << "mc_stats_s_B_CSC gmN "<<y_s_uw[1]<<" - - -  "<< y_s[1]/y_s_uw[1]<<" - -  - - -  - - -" <<"\n";
