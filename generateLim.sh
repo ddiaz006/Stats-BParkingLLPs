@@ -2,7 +2,7 @@ Type=IT
 outDir=Lim_${version}_${Type} 
 
 models=( \
-    SigPiPlusPiMinus \
+    Sig \
 )
 #    SigPi0 \
 #    SigPiPlusPiMinus \
@@ -226,7 +226,9 @@ do
   cd ${dir}/CSC
   echo "*******************" ${PWD}
   #combine -M AsymptoticLimits --run expected card.txt  --rMin 0 --rMax 50
-  combine -M AsymptoticLimits  card.txt  --rMax 50 --cminDefaultMinimizerStrategy 0
+  combineCards.py card.txt -S > card_s.txt
+  text2workspace.py card_s.txt -o card_S.root
+  combine -M AsymptoticLimits  card_s.txt  --rMax 50 --cminDefaultMinimizerStrategy 0
   cd -
 #  echo "-----   DT Limit -------"
 #  cd ${dir}/DT
