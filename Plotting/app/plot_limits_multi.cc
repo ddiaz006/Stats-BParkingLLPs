@@ -30,7 +30,7 @@ struct Limit
 const unsigned MAX_POINTS=1000;
 bool plotLHCb = false;
 
-const float lumi = 5;
+//const float lumi = 5;
 const float minLHCb = 5e-13;//5e-8;
 const float min = 5e-6;
 const float max = 1000;
@@ -51,34 +51,35 @@ const float topMargin    = 0.07;
 const float bottomMargin = 0.10;
 
 //CMS STANDARD
-TString extraText   = "Preliminary";
+//TString extraText   = "Preliminary";
+TString extraText   = "";
 //TString lumiText = "41.6 fb^{-1} (13 TeV)";
-TString lumiText = "41.58 fb^{-1} (13 TeV)";
+TString lumiText = "41.6 fb^{-1} (13 TeV)";
 
 bool AddCMS( TCanvas* C )
 {
   C->cd();
   float lumix = 0.955;
-  float lumiy = 0.945;
+  float lumiy = 0.94;
   float lumifont = 42;
 
-  float cmsx = 0.25;
+  float cmsx = 0.215;
   float cmsy = 0.94;
   float cmsTextFont   = 61;  // default is helvetic-bold
-  float extrax = cmsx +0.20;
-  float extray = cmsy;
+//  float extrax = cmsx +0.25;
+//  float extray = cmsy;
   float extraTextFont = 52;  // default is helvetica-italics
   // ratio of "CMS" and extra text size
-  float extraOverCmsTextSize  = 0.76;
-  float cmsSize = 0.06;
+//  float extraOverCmsTextSize  = 0.6;
+  float cmsSize = 0.055;
   TLatex latex;
   latex.SetNDC();
   latex.SetTextAngle(0);
   latex.SetTextColor(kBlack);
-  float extraTextSize = extraOverCmsTextSize*cmsSize;
+  float extraTextSize = 0.06;//extraOverCmsTextSize*cmsSize;
   latex.SetTextFont(lumifont);
   latex.SetTextAlign(31);
-  latex.SetTextSize(cmsSize);
+  latex.SetTextSize(0.05);
   latex.DrawLatex(lumix, lumiy,lumiText);
 
   latex.SetTextFont(cmsTextFont);
@@ -88,8 +89,8 @@ bool AddCMS( TCanvas* C )
 
   latex.SetTextFont(extraTextFont);
   latex.SetTextAlign(31);
-  latex.SetTextSize(extraTextSize);
-  latex.DrawLatex(extrax, extray, extraText);
+  latex.SetTextSize(0.055);
+  latex.DrawLatex(cmsx+0.24, cmsy, extraText);
   return true;
 };
 
@@ -122,7 +123,8 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
   g->SetMinimum(minimum); 
   g->SetLineColor(c);
   g->SetTitle("");
-  g->SetTitle(";#Phi proper decay length [mm];95 % CL Upper Limit on BR(B #rightarrow K#Phi);");
+  //g->SetTitle(";#Phi proper decay length [mm];95 % CL Upper Limit on BR(B #rightarrow K#Phi);");
+  g->SetTitle(";#Phi proper decay length [mm];95 % CL Upper Limit on #bf{#it{#Beta}}(B #rightarrow K#Phi);");
   g->GetXaxis()->SetTitleSize(0.09);
 
   if(type == "exp"){
@@ -137,13 +139,15 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
   }
   if( type == "band"){
     g->SetFillColorAlpha(c, 0.15);
+    //g->SetFillColor(c);
+    g->SetFillStyle(3001);
     g->SetLineWidth(2);
   }
 }
 
 void setOffsets(TGraph* g){
-  g->GetXaxis()->SetTitleOffset(0.9);
-  g->GetYaxis()->SetTitleOffset(0.95);
+  g->GetXaxis()->SetTitleOffset(0.95);
+  g->GetYaxis()->SetTitleOffset(1.2);
 }
 
 void setLegendQualities(TLegend* l, int nColumns){
@@ -153,7 +157,8 @@ void setLegendQualities(TLegend* l, int nColumns){
   l->SetLineWidth(1);
   l->SetFillColor(0);
   l->SetFillStyle(1001);
-  l->SetTextSize(0.05);
+  l->SetTextSize(0.055);
+  l->SetMargin(0.15); 
 //  if(plotLHCb)l->SetTextSize(0.01);
   l->SetNColumns(nColumns);
 
@@ -192,7 +197,7 @@ void setCanvas(TCanvas* c){
   c->SetFrameBorderMode(0);
   c->SetLogy();
   c->SetLogx();
-
+  gPad->SetBottomMargin(0.12);
   gStyle->SetPaintTextFormat("4.3f");
 }
 
@@ -251,7 +256,7 @@ TString s_region="";
 	  double limit;
 	  Limit tmpLimit;
 	  limitSF = getSF(s_cardPath);//0.000001;
-          std::cout<<"SF: "<<limitSF<<" "<< s_fname<< "    "<<ctau<<"   "<<_ctau<<std::endl;
+          std::cout<<"SF: "<<limitSF<<" "<< s_fname<< "    "<<"   "<<_ctau<<std::endl;
           //if (s_fname.Contains("SigPi0") && _ctau == 10000.0f) limitSF = 0.00001*1000.;
           //if (s_fname.Contains("SigPi0") && _ctau == 3.0f)     limitSF = 0.00001*100000.;
           //if (s_fname.Contains("SigPi0") && _ctau == 5.0f)     limitSF = 0.00001*1000.;
@@ -318,6 +323,18 @@ TString s_region="";
   std::cout<<"Pihad_0p3"<<std::endl;
   for ( auto tmp : mymap_pihad_0p3 ){std::cout << "cTau: " << tmp.first << " " << tmp.second.exp0p5 << std::endl;}
   std::cout<<"Pihad_0p3"<<std::endl;
+
+  std::cout<<"\n \nM=0.3\n"; 
+  for ( auto tmp : mymap_pihad_0p3 ){std::cout << "cTau:," << tmp.first << "," << tmp.second.exp0p5 <<","<<tmp.second.exp0p16<<","<<tmp.second.exp0p84<<","<<tmp.second.obs<< std::endl;}
+  std::cout<<"\n \nM=0.5\n"; 
+  for ( auto tmp : mymap_pihad_0p5 ){std::cout << "cTau:," << tmp.first << "," << tmp.second.exp0p5 <<","<<tmp.second.exp0p16<<","<<tmp.second.exp0p84<<","<<tmp.second.obs<< std::endl;}
+  std::cout<<"\n \nM=1.0\n"; 
+  for ( auto tmp : mymap_pihad_1p0 ){std::cout << "cTau:," << tmp.first << "," << tmp.second.exp0p5 <<","<<tmp.second.exp0p16<<","<<tmp.second.exp0p84<<","<<tmp.second.obs<< std::endl;}
+  std::cout<<"\n \nM=2.0\n"; 
+  for ( auto tmp : mymap_pihad_2p0 ){std::cout << "cTau:," << tmp.first << "," << tmp.second.exp0p5 <<","<<tmp.second.exp0p16<<","<<tmp.second.exp0p84<<","<<tmp.second.obs<< std::endl;}
+  std::cout<<"\n \nM=3.0\n"; 
+  for ( auto tmp : mymap_pihad_3p0 ){std::cout << "cTau:," << tmp.first << "," << tmp.second.exp0p5 <<","<<tmp.second.exp0p16<<","<<tmp.second.exp0p84<<","<<tmp.second.obs<< std::endl;}
+  std::cout<<"\n \n"; 
 //  for ( auto tmp : mymap_pihad ){std::cout << "cTau: " << tmp.first << " " << tmp.second.exp0p5 << std::endl;}
 //  std::cout<<"end curve check"<<std::endl;
   TFile* out   = new TFile("out_test.root", "recreate");
@@ -495,13 +512,23 @@ TString s_region="";
   //---------Draw
   //gTwoS_pi0->Draw("AF");
   //gObs_pi0->Draw("L");
+
+  //Review updates
+  gExp_pihad_0p3->GetXaxis()->SetLabelSize(0.05); 
+  gExp_pihad_0p3->GetYaxis()->SetLabelSize(0.05); 
+  gExp_pihad_0p3->GetXaxis()->SetTitleOffset(5); 
+  gExp_pihad_0p3->GetYaxis()->SetTitleOffset(5); 
+  // end review updates
+  gExp_pihad_0p3->GetXaxis()->SetTitleSize(0.06);
+  gExp_pihad_0p3->GetYaxis()->SetTitleSize(0.05);
+
   gExp_pihad_0p3->Draw("AL");
   gOneS_pihad_0p3->Draw("F same");
   gObs_pihad_0p3->Draw("L same");
  
-//  gExp_pihad_0p5->Draw("L");
-//  gOneS_pihad_0p5->Draw("F same");
-//  gObs_pihad_0p5->Draw("L same");
+  gExp_pihad_0p5->Draw("L");
+  gOneS_pihad_0p5->Draw("F same");
+  gObs_pihad_0p5->Draw("L same");
 
   gExp_pihad_1p0->Draw("L");
   gOneS_pihad_1p0->Draw("F same");
@@ -515,9 +542,6 @@ TString s_region="";
   gOneS_pihad_3p0->Draw("F same");
   gObs_pihad_3p0->Draw("L same");
 
-
-  gExp_pihad_0p3->GetXaxis()->SetTitleSize(0.05);
-  gExp_pihad_0p3->GetYaxis()->SetTitleSize(0.05);
   c->Update();
   setOffsets(gExp_pihad_0p3);
   setOffsets(gOneS_pihad_0p3);
@@ -539,10 +563,11 @@ TString s_region="";
   setOffsets(gOneS_pihad_3p0);
   setOffsets(gObs_pihad_3p0);
 
-  float l_ymin = 0.75;
+  float l_ymin = 0.7;
   float l_ymax = 0.92;
 
   //TLegend* leg = new TLegend( 0.15, 0.15, 0.5, 0.35, NULL, "brNDC" );
+  //TLegend* leg = new TLegend( 0.15, l_ymin, 0.5, l_ymax, NULL, "brNDC" );
   TLegend* leg = new TLegend( 0.15, l_ymin, 0.5, l_ymax, NULL, "brNDC" );
   setLegendQualities(leg,1);
  
@@ -551,17 +576,17 @@ TString s_region="";
   setLegendQualities(leg2,1);
   
   //leg->AddEntry( gExp_pihad_0p3, "#Phi #rightarrow  #Pi#Pi", "l" );
-  leg->AddEntry( gExp_pihad_0p3, "M_{#Phi} = 0.3 GeV", "l" );
-  //leg->AddEntry( gExp_pihad_0p5, "M_{#Phi} = 0.5", "l" );
-  leg->AddEntry( gExp_pihad_1p0, "M_{#Phi} = 1.0 GeV", "l" );
-  leg->AddEntry( gExp_pihad_2p0, "M_{#Phi} = 2.0 GeV", "l" );
-  leg->AddEntry( gExp_pihad_3p0, "M_{#Phi} = 3.0 GeV", "l" );
+  leg->AddEntry( gExp_pihad_0p3, "m_{#Phi} = 0.3 GeV", "l" );
+  leg->AddEntry( gExp_pihad_0p5, "m_{#Phi} = 0.5 GeV", "l" );
+  leg->AddEntry( gExp_pihad_1p0, "m_{#Phi} = 1.0 GeV", "l" );
+  leg->AddEntry( gExp_pihad_2p0, "m_{#Phi} = 2.0 GeV", "l" );
+  leg->AddEntry( gExp_pihad_3p0, "m_{#Phi} = 3.0 GeV", "l" );
   if(plotLHCb)leg->AddEntry( graph_lhcb_0p5, "LHCb B #rightarrow K(S #rightarrow #mu#mu); m_{S} = 0.5 GeV" , "l" );
   if(plotLHCb)leg->AddEntry( graph_lhcb_1p0, "LHCb B #rightarrow K(S #rightarrow #mu#mu); m_{S} = 1 GeV" , "l" );
 
   //leg2->AddEntry( gOneS_pi0, "#pm 1 s.d. expected", "f" );
   leg2->AddEntry( gOneS_pihad_0p3, "#pm 1 s.d. expected", "f" );
-  //leg2->AddEntry( gOneS_pihad_0p5, "#pm 1 s.d. expected", "f" );
+  leg2->AddEntry( gOneS_pihad_0p5, "#pm 1 s.d. expected", "f" );
   leg2->AddEntry( gOneS_pihad_1p0, "#pm 1 s.d. expected", "f" );
   leg2->AddEntry( gOneS_pihad_2p0, "#pm 1 s.d. expected", "f" );
   leg2->AddEntry( gOneS_pihad_3p0, "#pm 1 s.d. expected", "f" );
@@ -571,14 +596,14 @@ TString s_region="";
   leg->Draw("SAME");
   leg2->Draw("SAME");
 
-  TLegend* leg3 = new TLegend( 0.5, 0.65, 0.925, 0.75, NULL, "brNDC" );
+  TLegend* leg3 = new TLegend( 0.4, 0.59, 0.925, 0.69, NULL, "brNDC" );
   leg3->SetBorderSize(0);
   leg3->SetLineColor(1);
   leg3->SetLineStyle(1);
   leg3->SetLineWidth(1);
   leg3->SetFillColor(0);
   leg3->SetFillStyle(1001);
-  leg3->SetTextSize(0.04);
+  leg3->SetTextSize(0.054);
   leg3->SetNColumns(1);
 
   leg3->AddEntry( gObs_pihad_0p5, "Observed limit", "l" );
@@ -588,15 +613,15 @@ TString s_region="";
   //Phi Mass label
   TLatex latexMass;
   latexMass.SetNDC();
-  latexMass.SetTextSize(0.05);
+  latexMass.SetTextSize(0.066);
   latexMass.SetTextFont(42);
+  latexMass.SetLineWidth(2);
   //latexMass.DrawLatex(0.4, 0.88, "m_{#Phi} = "+s_mass+" GeV");//   "+s_region);
   //latexMass.DrawLatex(0.4, 0.88, "m_{#Phi} = "+s_mass+" GeV   "+s_region);
-  latexMass.DrawLatex(0.2, 0.7, "#Phi #rightarrow  #Pi#Pi   ");
+  //latexMass.DrawLatex(0.425, 0.525, "#Phi #rightarrow  #pi^{+}#pi^{-}   ");
 
 
   AddCMS(c);
-
   //c->SetLogx();
   c->SaveAs(("Limit_"+rawName+".pdf").c_str());
   c->SaveAs(("Limit_"+rawName+".png").c_str());

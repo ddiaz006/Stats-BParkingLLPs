@@ -214,6 +214,7 @@ TString s_region="";
   std::ifstream ifs ( inputList.c_str(), std::ifstream::in );//input file list
 
 
+  std::map<float, Limit> mymap_piAll;
   std::map<float, Limit> mymap_pi0;
   std::map<float, Limit> mymap_pihad;
 
@@ -271,6 +272,7 @@ TString s_region="";
 	  //tmpLimit.obs = tmpLimit.exp0p5;
 	  tmpLimit.obs = limit*limitSF;
 
+          std::cout<<"loaded limit"<<std::endl;
 	  //std::cout << "ctau: " << ctau << "-> " << tmpLimit.exp0p025 << " " << tmpLimit.exp0p16 << " " << tmpLimit.exp0p5 << " " << tmpLimit.exp0p84<< " " 
           //          << tmpLimit.exp0p975 << " " << tmpLimit.obs << "   SF="<<limitSF <<std::endl;
 
@@ -280,10 +282,16 @@ TString s_region="";
 	        mymap_pi0[_ctau] = tmpLimit;
 	      }
           }
-          if (s_fname.Contains("SigPiPlusPiMinus")){
+          if (s_fname.Contains("SigPiPlusPiMinus") ||s_fname.Contains("Sig_")){
 	    if ( mymap_pihad.find( _ctau ) == mymap_pihad.end() )
 	      {
 	        mymap_pihad[_ctau] = tmpLimit;
+	      }
+          }
+          if (s_fname.Contains("Sig_")){
+	    if ( mymap_piAll.find( _ctau ) == mymap_piAll.end() )
+	      {
+	        mymap_piAll[_ctau] = tmpLimit;
 	      }
           }
           if      (s_fname.Contains("CSC")) s_region="";//"CSC";
@@ -299,7 +307,9 @@ TString s_region="";
   std::cout<<"Pi0"<<std::endl;
   for ( auto tmp : mymap_pi0 ){std::cout << "cTau: " << tmp.first << " " << tmp.second.exp0p5 << std::endl;}
   std::cout<<"Pihad"<<std::endl;
-  for ( auto tmp : mymap_pihad ){std::cout << "cTau: " << tmp.first << " " << tmp.second.exp0p5 <<" "<<tmp.second.exp0p16<<" "<<tmp.second.exp0p84<<" "<<tmp.second.obs<< std::endl;}
+  for ( auto tmp : mymap_pihad ){std::cout << "cTau:," << tmp.first << "," << tmp.second.exp0p5 <<","<<tmp.second.exp0p16<<","<<tmp.second.exp0p84<<","<<tmp.second.obs<< std::endl;}
+  std::cout<<"PiAll"<<std::endl;
+  for ( auto tmp : mymap_piAll ){std::cout << "cTau:," << tmp.first << "," << tmp.second.exp0p5 <<","<<tmp.second.exp0p16<<","<<tmp.second.exp0p84<<","<<tmp.second.obs<< std::endl;}
   std::cout<<"end curve check"<<std::endl;
   TFile* out   = new TFile("out_test.root", "recreate");
 

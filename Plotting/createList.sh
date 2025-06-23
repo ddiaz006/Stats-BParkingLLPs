@@ -40,8 +40,9 @@ mass=(\
 #)
 
 #"SigPi0_" \
+#"SigPiPlusPiMinus_" \
 proc=(\
-"SigPiPlusPiMinus_" \
+"Sig_" \
 )
 
 for m in ${mass[@]} 
