@@ -473,7 +473,7 @@ TString s_region="";
   
   //leg->AddEntry( gExp_pi0,   "#Phi #rightarrow  #Pi^{0}#Pi^{0}", "l" );
   //leg->AddEntry( gExp_pihad, "#Phi #rightarrow  #Pi^{+}#Pi^{-}", "l" );
-  leg->AddEntry( gExp_pihad, "#Phi #rightarrow  #Pi#Pi", "l" );
+  //leg->AddEntry( gExp_pihad, "#Phi #rightarrow  #Pi#Pi", "l" );
   if(plotLHCb)leg->AddEntry( graph_lhcb_0p5, "LHCb B #rightarrow K(S #rightarrow #mu#mu); m_{S} = 0.5 GeV" , "l" );
   if(plotLHCb)leg->AddEntry( graph_lhcb_1p0, "LHCb B #rightarrow K(S #rightarrow #mu#mu); m_{S} = 1 GeV" , "l" );
 

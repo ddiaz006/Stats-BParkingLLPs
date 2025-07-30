@@ -123,8 +123,8 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
   g->SetMinimum(minimum); 
   g->SetLineColor(c);
   g->SetTitle("");
-  //g->SetTitle(";#Phi proper decay length [mm];95 % CL Upper Limit on BR(B #rightarrow K#Phi);");
-  g->SetTitle(";#Phi proper decay length [mm];95 % CL Upper Limit on #bf{#it{#Beta}}(B #rightarrow K#Phi);");
+  //g->SetTitle(";#Phi proper decay length [mm];95 % CL upper limit on BR(B #rightarrow K#Phi);");
+  g->SetTitle(";#Phi proper decay length [mm];95 % CL upper limit on #bf{#it{#Beta}}(B #rightarrow K#Phi);");
   g->GetXaxis()->SetTitleSize(0.09);
 
   if(type == "exp"){
@@ -141,7 +141,7 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
     g->SetFillColorAlpha(c, 0.15);
     //g->SetFillColor(c);
     g->SetFillStyle(3001);
-    g->SetLineWidth(2);
+    g->SetLineWidth(1);
   }
 }
 
