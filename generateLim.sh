@@ -30,6 +30,7 @@ do
    ${model}_M0p3_low_ctau1000 \
    ${model}_M0p3_low_ctau3000 \
    ${model}_M0p3_low_ctau5000 \
+   ${model}_M0p3_low_ctau7000 \
    ${model}_M0p3_low_ctau10000 \
 
    ${model}_M0p5_low_ctau3 \
@@ -46,6 +47,7 @@ do
    ${model}_M0p5_low_ctau1000 \
    ${model}_M0p5_low_ctau3000 \
    ${model}_M0p5_low_ctau5000 \
+   ${model}_M0p5_low_ctau7000 \
    ${model}_M0p5_low_ctau10000 \
  
    ${model}_M1p0_low_ctau3 \
@@ -62,6 +64,7 @@ do
    ${model}_M1p0_low_ctau1000 \
    ${model}_M1p0_low_ctau3000 \
    ${model}_M1p0_low_ctau5000 \
+   ${model}_M1p0_low_ctau7000 \
    ${model}_M1p0_low_ctau10000 \
  
    ${model}_M2p0_low_ctau3 \
@@ -78,6 +81,7 @@ do
    ${model}_M2p0_low_ctau1000 \
    ${model}_M2p0_low_ctau3000 \
    ${model}_M2p0_low_ctau5000 \
+   ${model}_M2p0_low_ctau7000 \
    ${model}_M2p0_low_ctau10000 \
  
    ${model}_M3p0_low_ctau3 \
@@ -94,6 +98,7 @@ do
    ${model}_M3p0_low_ctau1000 \
    ${model}_M3p0_low_ctau3000 \
    ${model}_M3p0_low_ctau5000 \
+   ${model}_M3p0_low_ctau7000 \
    ${model}_M3p0_low_ctau10000 \
 
    ${model}_M0p3_high_ctau3 \
@@ -110,6 +115,7 @@ do
    ${model}_M0p3_high_ctau1000 \
    ${model}_M0p3_high_ctau3000 \
    ${model}_M0p3_high_ctau5000 \
+   ${model}_M0p3_high_ctau7000 \
    ${model}_M0p3_high_ctau10000 \
 
    ${model}_M0p5_high_ctau3 \
@@ -126,6 +132,7 @@ do
    ${model}_M0p5_high_ctau1000 \
    ${model}_M0p5_high_ctau3000 \
    ${model}_M0p5_high_ctau5000 \
+   ${model}_M0p5_high_ctau7000 \
    ${model}_M0p5_high_ctau10000 \
  
    ${model}_M1p0_high_ctau3 \
@@ -142,6 +149,7 @@ do
    ${model}_M1p0_high_ctau1000 \
    ${model}_M1p0_high_ctau3000 \
    ${model}_M1p0_high_ctau5000 \
+   ${model}_M1p0_high_ctau7000 \
    ${model}_M1p0_high_ctau10000 \
  
    ${model}_M2p0_high_ctau3 \
@@ -158,6 +166,7 @@ do
    ${model}_M2p0_high_ctau1000 \
    ${model}_M2p0_high_ctau3000 \
    ${model}_M2p0_high_ctau5000 \
+   ${model}_M2p0_high_ctau7000 \
    ${model}_M2p0_high_ctau10000 \
 
    ${model}_M3p0_high_ctau3 \
@@ -174,9 +183,169 @@ do
    ${model}_M3p0_high_ctau1000 \
    ${model}_M3p0_high_ctau3000 \
    ${model}_M3p0_high_ctau5000 \
+   ${model}_M3p0_high_ctau7000 \
    ${model}_M3p0_high_ctau10000 \
 
    )
+   ##${model}_M0p3_low_ctau3 \
+   ##${model}_M0p3_low_ctau5 \
+   ##${model}_M0p3_low_ctau7 \
+   ##${model}_M0p3_low_ctau10 \
+   ##${model}_M0p3_low_ctau30 \
+   ##${model}_M0p3_low_ctau50 \
+   ##${model}_M0p3_low_ctau70 \
+   ##${model}_M0p3_low_ctau100 \
+   ##${model}_M0p3_low_ctau300 \
+   ##${model}_M0p3_low_ctau500 \
+   ##${model}_M0p3_low_ctau700 \
+   ##${model}_M0p3_low_ctau1000 \
+   ##${model}_M0p3_low_ctau3000 \
+   ##${model}_M0p3_low_ctau5000 \
+   ##${model}_M0p3_low_ctau10000 \
+
+   ##${model}_M0p5_low_ctau3 \
+   ##${model}_M0p5_low_ctau5 \
+   ##${model}_M0p5_low_ctau7 \
+   ##${model}_M0p5_low_ctau10 \
+   ##${model}_M0p5_low_ctau30 \
+   ##${model}_M0p5_low_ctau50 \
+   ##${model}_M0p5_low_ctau70 \
+   ##${model}_M0p5_low_ctau100 \
+   ##${model}_M0p5_low_ctau300 \
+   ##${model}_M0p5_low_ctau500 \
+   ##${model}_M0p5_low_ctau700 \
+   ##${model}_M0p5_low_ctau1000 \
+   ##${model}_M0p5_low_ctau3000 \
+   ##${model}_M0p5_low_ctau5000 \
+   ##${model}_M0p5_low_ctau10000 \
+ 
+   ##${model}_M1p0_low_ctau3 \
+   ##${model}_M1p0_low_ctau5 \
+   ##${model}_M1p0_low_ctau7 \
+   ##${model}_M1p0_low_ctau10 \
+   ##${model}_M1p0_low_ctau30 \
+   ##${model}_M1p0_low_ctau50 \
+   ##${model}_M1p0_low_ctau70 \
+   ##${model}_M1p0_low_ctau100 \
+   ##${model}_M1p0_low_ctau300 \
+   ##${model}_M1p0_low_ctau500 \
+   ##${model}_M1p0_low_ctau700 \
+   ##${model}_M1p0_low_ctau1000 \
+   ##${model}_M1p0_low_ctau3000 \
+   ##${model}_M1p0_low_ctau5000 \
+   ##${model}_M1p0_low_ctau10000 \
+ 
+   ##${model}_M2p0_low_ctau3 \
+   ##${model}_M2p0_low_ctau5 \
+   ##${model}_M2p0_low_ctau7 \
+   ##${model}_M2p0_low_ctau10 \
+   ##${model}_M2p0_low_ctau30 \
+   ##${model}_M2p0_low_ctau50 \
+   ##${model}_M2p0_low_ctau70 \
+   ##${model}_M2p0_low_ctau100 \
+   ##${model}_M2p0_low_ctau300 \
+   ##${model}_M2p0_low_ctau500 \
+   ##${model}_M2p0_low_ctau700 \
+   ##${model}_M2p0_low_ctau1000 \
+   ##${model}_M2p0_low_ctau3000 \
+   ##${model}_M2p0_low_ctau5000 \
+   ##${model}_M2p0_low_ctau10000 \
+ 
+   ##${model}_M3p0_low_ctau3 \
+   ##${model}_M3p0_low_ctau5 \
+   ##${model}_M3p0_low_ctau7 \
+   ##${model}_M3p0_low_ctau10 \
+   ##${model}_M3p0_low_ctau30 \
+   ##${model}_M3p0_low_ctau50 \
+   ##${model}_M3p0_low_ctau70 \
+   ##${model}_M3p0_low_ctau100 \
+   ##${model}_M3p0_low_ctau300 \
+   ##${model}_M3p0_low_ctau500 \
+   ##${model}_M3p0_low_ctau700 \
+   ##${model}_M3p0_low_ctau1000 \
+   ##${model}_M3p0_low_ctau3000 \
+   ##${model}_M3p0_low_ctau5000 \
+   ##${model}_M3p0_low_ctau10000 \
+
+   ##${model}_M0p3_high_ctau3 \
+   ##${model}_M0p3_high_ctau5 \
+   ##${model}_M0p3_high_ctau7 \
+   ##${model}_M0p3_high_ctau10 \
+   ##${model}_M0p3_high_ctau30 \
+   ##${model}_M0p3_high_ctau50 \
+   ##${model}_M0p3_high_ctau70 \
+   ##${model}_M0p3_high_ctau100 \
+   ##${model}_M0p3_high_ctau300 \
+   ##${model}_M0p3_high_ctau500 \
+   ##${model}_M0p3_high_ctau700 \
+   ##${model}_M0p3_high_ctau1000 \
+   ##${model}_M0p3_high_ctau3000 \
+   ##${model}_M0p3_high_ctau5000 \
+   ##${model}_M0p3_high_ctau10000 \
+
+   ##${model}_M0p5_high_ctau3 \
+   ##${model}_M0p5_high_ctau5 \
+   ##${model}_M0p5_high_ctau7 \
+   ##${model}_M0p5_high_ctau10 \
+   ##${model}_M0p5_high_ctau30 \
+   ##${model}_M0p5_high_ctau50 \
+   ##${model}_M0p5_high_ctau70 \
+   ##${model}_M0p5_high_ctau100 \
+   ##${model}_M0p5_high_ctau300 \
+   ##${model}_M0p5_high_ctau500 \
+   ##${model}_M0p5_high_ctau700 \
+   ##${model}_M0p5_high_ctau1000 \
+   ##${model}_M0p5_high_ctau3000 \
+   ##${model}_M0p5_high_ctau5000 \
+   ##${model}_M0p5_high_ctau10000 \
+ 
+   ##${model}_M1p0_high_ctau3 \
+   ##${model}_M1p0_high_ctau5 \
+   ##${model}_M1p0_high_ctau7 \
+   ##${model}_M1p0_high_ctau10 \
+   ##${model}_M1p0_high_ctau30 \
+   ##${model}_M1p0_high_ctau50 \
+   ##${model}_M1p0_high_ctau70 \
+   ##${model}_M1p0_high_ctau100 \
+   ##${model}_M1p0_high_ctau300 \
+   ##${model}_M1p0_high_ctau500 \
+   ##${model}_M1p0_high_ctau700 \
+   ##${model}_M1p0_high_ctau1000 \
+   ##${model}_M1p0_high_ctau3000 \
+   ##${model}_M1p0_high_ctau5000 \
+   ##${model}_M1p0_high_ctau10000 \
+ 
+   ##${model}_M2p0_high_ctau3 \
+   ##${model}_M2p0_high_ctau5 \
+   ##${model}_M2p0_high_ctau7 \
+   ##${model}_M2p0_high_ctau10 \
+   ##${model}_M2p0_high_ctau30 \
+   ##${model}_M2p0_high_ctau50 \
+   ##${model}_M2p0_high_ctau70 \
+   ##${model}_M2p0_high_ctau100 \
+   ##${model}_M2p0_high_ctau300 \
+   ##${model}_M2p0_high_ctau500 \
+   ##${model}_M2p0_high_ctau700 \
+   ##${model}_M2p0_high_ctau1000 \
+   ##${model}_M2p0_high_ctau3000 \
+   ##${model}_M2p0_high_ctau5000 \
+   ##${model}_M2p0_high_ctau10000 \
+
+   ##${model}_M3p0_high_ctau3 \
+   ##${model}_M3p0_high_ctau5 \
+   ##${model}_M3p0_high_ctau7 \
+   ##${model}_M3p0_high_ctau10 \
+   ##${model}_M3p0_high_ctau30 \
+   ##${model}_M3p0_high_ctau50 \
+   ##${model}_M3p0_high_ctau70 \
+   ##${model}_M3p0_high_ctau100 \
+   ##${model}_M3p0_high_ctau300 \
+   ##${model}_M3p0_high_ctau500 \
+   ##${model}_M3p0_high_ctau700 \
+   ##${model}_M3p0_high_ctau1000 \
+   ##${model}_M3p0_high_ctau3000 \
+   ##${model}_M3p0_high_ctau5000 \
+   ##${model}_M3p0_high_ctau10000 \
   
   for s in ${sig[@]}
   do

@@ -736,7 +736,7 @@ TString var;
   else {std::cout<<"Incorrect Type"<<std::endl;}
 
   int size = names.size()/2;
-  for(int i=1; i<size; i++ ) {
+  for(int i=1; i<=size; i++ ) {
     if(Type=="IT"){
       histos0_FailN.push_back(getHisto("Fail",names[i].first, var));      //Fails NRecHit
       histos0_PassN.push_back(getHisto("Pass"  ,names[i].first, var));    //Pass  NRecHit
@@ -776,7 +776,7 @@ TString var;
   //Write histos to root file
   std::vector<TString> tableLine; 
   std::cout<<"grabing values"<<std::endl;
-  for(int i=1; i<names.size()/2; i++){
+  for(int i=1; i<=names.size()/2; i++){
     float SF = 1.;
     if (SFmap.find(names[i].second) != SFmap.end()) SF = SFmap[names[i].second];
     float y_s_A = SF*histos_PassN[i]->GetBinContent(2); //PASS NrecHits PASS V2(dPhi) signal
