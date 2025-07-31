@@ -124,7 +124,7 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
   g->SetLineColor(c);
   g->SetTitle("");
   //g->SetTitle(";#Phi proper decay length [mm];95 % CL upper limit on BR(B #rightarrow K#Phi);");
-  g->SetTitle(";#Phi proper decay length [mm];95 % CL upper limit on #bf{#it{#Beta}}(B #rightarrow K#Phi);");
+  g->SetTitle(";#Phi proper decay length [mm];upper limit on #bf{#it{#Beta}}(B #rightarrow K#Phi);");
   g->GetXaxis()->SetTitleSize(0.09);
 
   if(type == "exp"){
@@ -198,6 +198,8 @@ void setCanvas(TCanvas* c){
   c->SetLogy();
   c->SetLogx();
   gPad->SetBottomMargin(0.12);
+  gPad->SetTickx(1);
+  gPad->SetTicky(1);
   gStyle->SetPaintTextFormat("4.3f");
 }
 
@@ -514,15 +516,22 @@ TString s_region="";
   //gObs_pi0->Draw("L");
 
   //Review updates
-  gExp_pihad_0p3->GetXaxis()->SetLabelSize(0.05); 
-  gExp_pihad_0p3->GetYaxis()->SetLabelSize(0.05); 
-  gExp_pihad_0p3->GetXaxis()->SetTitleOffset(5); 
-  gExp_pihad_0p3->GetYaxis()->SetTitleOffset(5); 
+  gExp_pihad_1p0->GetXaxis()->SetLabelSize(0.05); 
+  gExp_pihad_1p0->GetYaxis()->SetLabelSize(0.05); 
+  gExp_pihad_1p0->GetXaxis()->SetTitleOffset(5); 
+  gExp_pihad_1p0->GetYaxis()->SetTitleOffset(5); 
   // end review updates
-  gExp_pihad_0p3->GetXaxis()->SetTitleSize(0.06);
+  gExp_pihad_1p0->GetXaxis()->SetTitleSize(0.06);
+  gExp_pihad_1p0->GetYaxis()->SetTitleSize(0.05);
   gExp_pihad_0p3->GetYaxis()->SetTitleSize(0.05);
+  
 
-  gExp_pihad_0p3->Draw("AL");
+  gExp_pihad_1p0->Draw("AL");
+  gOneS_pihad_1p0->Draw("F same");
+  gObs_pihad_1p0->Draw("L same");
+
+
+  gExp_pihad_0p3->Draw("L");
   gOneS_pihad_0p3->Draw("F same");
   gObs_pihad_0p3->Draw("L same");
  
@@ -537,10 +546,11 @@ TString s_region="";
   gExp_pihad_2p0->Draw("L");
   gOneS_pihad_2p0->Draw("F same");
   gObs_pihad_2p0->Draw("L same");
-
+  
   gExp_pihad_3p0->Draw("L");
   gOneS_pihad_3p0->Draw("F same");
   gObs_pihad_3p0->Draw("L same");
+
 
   c->Update();
   setOffsets(gExp_pihad_0p3);
@@ -563,8 +573,8 @@ TString s_region="";
   setOffsets(gOneS_pihad_3p0);
   setOffsets(gObs_pihad_3p0);
 
-  float l_ymin = 0.7;
-  float l_ymax = 0.92;
+  float l_ymin = 0.65;
+  float l_ymax = 0.87;
 
   //TLegend* leg = new TLegend( 0.15, 0.15, 0.5, 0.35, NULL, "brNDC" );
   //TLegend* leg = new TLegend( 0.15, l_ymin, 0.5, l_ymax, NULL, "brNDC" );
@@ -596,7 +606,7 @@ TString s_region="";
   leg->Draw("SAME");
   leg2->Draw("SAME");
 
-  TLegend* leg3 = new TLegend( 0.4, 0.59, 0.925, 0.69, NULL, "brNDC" );
+  TLegend* leg3 = new TLegend( 0.35, 0.54, 0.875, 0.64, NULL, "brNDC" );
   leg3->SetBorderSize(0);
   leg3->SetLineColor(1);
   leg3->SetLineStyle(1);
