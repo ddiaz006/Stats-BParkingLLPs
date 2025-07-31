@@ -45,10 +45,10 @@ Color_t Color_lhcb_0p5 = kGreen+2;
 Color_t Color_lhcb_1p0 = kOrange+2;
 
 //Margins
-const float leftMargin   = 0.12;
+const float leftMargin   = 0.15;//0.12;
 const float rightMargin  = 0.05;
 const float topMargin    = 0.07;
-const float bottomMargin = 0.10;
+const float bottomMargin = 0.15;//0.10;
 
 //CMS STANDARD
 //TString extraText   = "Preliminary";
@@ -63,7 +63,7 @@ bool AddCMS( TCanvas* C )
   float lumiy = 0.94;
   float lumifont = 42;
 
-  float cmsx = 0.215;
+  float cmsx = 0.255;
   float cmsy = 0.94;
   float cmsTextFont   = 61;  // default is helvetic-bold
 //  float extrax = cmsx +0.25;
@@ -124,7 +124,7 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
   g->SetLineColor(c);
   g->SetTitle("");
   //g->SetTitle(";#Phi proper decay length [mm];95 % CL upper limit on BR(B #rightarrow K#Phi);");
-  g->SetTitle(";#Phi proper decay length [mm];upper limit on #bf{#it{#Beta}}(B #rightarrow K#Phi);");
+  g->SetTitle(";#Phi proper decay length [mm];Upper limit on #bf{#it{#Beta}}(B #rightarrow K#Phi);");
   g->GetXaxis()->SetTitleSize(0.09);
 
   if(type == "exp"){
@@ -146,8 +146,8 @@ void setLineQualities (TGraph* g, float minimum, Color_t c, TString type, int st
 }
 
 void setOffsets(TGraph* g){
-  g->GetXaxis()->SetTitleOffset(0.95);
-  g->GetYaxis()->SetTitleOffset(1.2);
+  g->GetXaxis()->SetTitleOffset(1.2);
+  g->GetYaxis()->SetTitleOffset(1.4);
 }
 
 void setLegendQualities(TLegend* l, int nColumns){
@@ -197,7 +197,7 @@ void setCanvas(TCanvas* c){
   c->SetFrameBorderMode(0);
   c->SetLogy();
   c->SetLogx();
-  gPad->SetBottomMargin(0.12);
+  //gPad->SetBottomMargin(0.12);
   gPad->SetTickx(1);
   gPad->SetTicky(1);
   gStyle->SetPaintTextFormat("4.3f");
@@ -518,8 +518,8 @@ TString s_region="";
   //Review updates
   gExp_pihad_1p0->GetXaxis()->SetLabelSize(0.05); 
   gExp_pihad_1p0->GetYaxis()->SetLabelSize(0.05); 
-  gExp_pihad_1p0->GetXaxis()->SetTitleOffset(5); 
-  gExp_pihad_1p0->GetYaxis()->SetTitleOffset(5); 
+  gExp_pihad_1p0->GetXaxis()->SetTitleOffset(6); 
+  gExp_pihad_1p0->GetYaxis()->SetTitleOffset(6); 
   // end review updates
   gExp_pihad_1p0->GetXaxis()->SetTitleSize(0.06);
   gExp_pihad_1p0->GetYaxis()->SetTitleSize(0.05);
@@ -578,11 +578,11 @@ TString s_region="";
 
   //TLegend* leg = new TLegend( 0.15, 0.15, 0.5, 0.35, NULL, "brNDC" );
   //TLegend* leg = new TLegend( 0.15, l_ymin, 0.5, l_ymax, NULL, "brNDC" );
-  TLegend* leg = new TLegend( 0.15, l_ymin, 0.5, l_ymax, NULL, "brNDC" );
+  TLegend* leg = new TLegend( 0.18, l_ymin, 0.5, l_ymax, NULL, "brNDC" );
   setLegendQualities(leg,1);
  
   //TLegend* leg2 = new TLegend( 0.5, 0.15, 0.925, 0.35, NULL, "brNDC" );
-  TLegend* leg2 = new TLegend( 0.5, l_ymin, 0.925, l_ymax, NULL, "brNDC" );
+  TLegend* leg2 = new TLegend( 0.51, l_ymin, 0.935, l_ymax, NULL, "brNDC" );
   setLegendQualities(leg2,1);
   
   //leg->AddEntry( gExp_pihad_0p3, "#Phi #rightarrow  #Pi#Pi", "l" );
